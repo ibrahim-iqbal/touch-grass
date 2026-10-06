@@ -31,3 +31,12 @@ open the gear icon to optionally add:
 
 without either, it falls back to a curated dare list and your browser's
 built-in voice — still fully usable, just less smart.
+
+## icon
+
+`icon.svg` is the app icon (favicon, apple-touch-icon, manifest icon). All
+modern browsers and Android accept an SVG manifest icon directly. iOS Safari
+ignores SVG for the home-screen icon, so if you want a proper iOS "Add to
+Home Screen" icon, export `icon.svg` to a 180x180 PNG (e.g. `icon-180.png`)
+and add `<link rel="apple-touch-icon" href="icon-180.png">` above the SVG
+fallback.
