@@ -1,0 +1,9 @@
+{
+  "name": "touch grass",
+  "short_name": "touch grass",
+  "description": "voice dares that get you outside, generated and run entirely in your browser",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f5f3ea",
+  "theme_color": "#0f6e56"
+}

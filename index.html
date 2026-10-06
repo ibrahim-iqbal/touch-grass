@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>touch grass</title>
+<meta name="description" content="voice dares that get you outside, generated and run entirely in your browser" />
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0f6e56" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<main class="screen">
+
+  <header class="top-bar">
+    <div class="streak">
+      <span class="flame">🔥</span>
+      <span id="streak-count">0 day streak</span>
+    </div>
+    <button id="settings-btn" class="icon-btn" aria-label="settings">⚙</button>
+  </header>
+
+  <section id="dare-card" class="dare-card hidden">
+    <p class="dare-label">today's dare</p>
+    <p id="dare-text" class="dare-text"></p>
+    <div class="dare-tags">
+      <span id="dare-time" class="tag"></span>
+      <span id="dare-energy" class="tag"></span>
+    </div>
+  </section>
+
+  <section class="mic-section">
+    <button id="mic-btn" class="mic-btn" aria-label="speak to get a dare">🎙</button>
+    <p id="mic-hint" class="mic-hint">tell it your time, energy, and where you are</p>
+  </section>
+
+  <button id="proof-btn" class="proof-btn hidden">📷 prove it outside</button>
+
+  <section class="stats-row">
+    <div class="stat"><p id="stat-dares" class="stat-num">0</p><p class="stat-label">dares done</p></div>
+    <div class="stat"><p id="stat-time" class="stat-num">0m</p><p class="stat-label">outside time</p></div>
+    <div class="stat"><p id="stat-best" class="stat-num">0</p><p class="stat-label">best streak</p></div>
+  </section>
+
+</main>
+
+<div id="camera-modal" class="modal hidden">
+  <div class="modal-inner">
+    <video id="camera-feed" autoplay playsinline></video>
+    <canvas id="camera-canvas" class="hidden"></canvas>
+    <div class="modal-actions">
+      <button id="camera-cancel" class="btn">cancel</button>
+      <button id="camera-snap" class="btn btn-primary">snap proof</button>
+    </div>
+  </div>
+</div>
+
+<div id="settings-modal" class="modal hidden">
+  <div class="modal-inner settings-inner">
+    <h2>settings</h2>
+    <label class="field-label" for="hf-token">hugging face token (optional)</label>
+    <input id="hf-token" class="field" type="password" placeholder="paste token to enable smart dare generation" />
+    <p class="field-hint">without a token, dares come from a curated offline list instead of the live model. nothing you type here leaves your browser.</p>
+    <label class="field-label" for="elevenlabs-key">elevenlabs api key (optional)</label>
+    <input id="elevenlabs-key" class="field" type="password" placeholder="paste key for nicer voice" />
+    <p class="field-hint">without a key, voice falls back to your browser's built-in speech engine.</p>
+    <button id="settings-save" class="btn btn-primary">save</button>
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
