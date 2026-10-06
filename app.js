@@ -56,7 +56,18 @@ const els = {
   cameraCanvas: document.getElementById("camera-canvas"),
   cameraSnap: document.getElementById("camera-snap"),
   cameraCancel: document.getElementById("camera-cancel"),
+  scene: document.querySelector(".scene"),
+  player: document.getElementById("player"),
 };
+
+// ponytail: simple dare-count thresholds, not a real progression system —
+// upgrade path is tuning these numbers once real usage data exists.
+function worldTier(daresDone) {
+  if (daresDone >= 14) return 3;
+  if (daresDone >= 7) return 2;
+  if (daresDone >= 3) return 1;
+  return 0;
+}
 
 function renderStats() {
   els.streakCount.textContent = `${state.streak} day streak`;
@@ -64,6 +75,7 @@ function renderStats() {
   els.statTime.textContent = `${state.outsideMinutes}m`;
   els.statBest.textContent = state.bestStreak;
   if (state.daresDone > 0) els.pitch.classList.add("hidden");
+  els.scene.dataset.tier = String(worldTier(state.daresDone));
 }
 
 function bumpStat(el) {
@@ -71,6 +83,22 @@ function bumpStat(el) {
   // restart the animation even if it's already mid-play
   void el.offsetWidth;
   el.classList.add("bump");
+}
+
+function celebrate() {
+  els.player.classList.remove("celebrating");
+  void els.player.offsetWidth;
+  els.player.classList.add("celebrating");
+  setTimeout(() => els.player.classList.remove("celebrating"), 1000);
+
+  const rect = els.player.getBoundingClientRect();
+  const burst = document.createElement("span");
+  burst.className = "sparkle-burst";
+  burst.textContent = "+1 ✦";
+  burst.style.left = `${rect.left + rect.width / 2 - 14}px`;
+  burst.style.top = `${rect.top - 10}px`;
+  document.body.appendChild(burst);
+  setTimeout(() => burst.remove(), 1200);
 }
 
 function renderDare(dare) {
@@ -224,6 +252,7 @@ els.micBtn.addEventListener("click", async () => {
 
   els.micBtn.disabled = true;
   els.micBtn.classList.add("listening");
+  els.player.classList.add("listening");
   els.micHint.textContent = "listening...";
 
   recognition.onresult = async (e) => {
@@ -247,6 +276,7 @@ els.micBtn.addEventListener("click", async () => {
 
   recognition.onend = () => {
     els.micBtn.classList.remove("listening");
+    els.player.classList.remove("listening");
     els.micBtn.disabled = false;
   };
 
@@ -333,6 +363,7 @@ function recordProof(looksOutside) {
   bumpStat(els.streakCount);
   bumpStat(els.statDares);
   bumpStat(els.statBest);
+  celebrate();
 
   if (!looksOutside) {
     els.micHint.textContent = "proof saved (looked a bit dim, but counted it)";
