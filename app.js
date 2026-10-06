@@ -35,6 +35,7 @@ const els = {
   dareText: document.getElementById("dare-text"),
   dareTime: document.getElementById("dare-time"),
   dareEnergy: document.getElementById("dare-energy"),
+  pitch: document.getElementById("pitch"),
   micBtn: document.getElementById("mic-btn"),
   micHint: document.getElementById("mic-hint"),
   proofBtn: document.getElementById("proof-btn"),
@@ -59,6 +60,14 @@ function renderStats() {
   els.statDares.textContent = state.daresDone;
   els.statTime.textContent = `${state.outsideMinutes}m`;
   els.statBest.textContent = state.bestStreak;
+  if (state.daresDone > 0) els.pitch.classList.add("hidden");
+}
+
+function bumpStat(el) {
+  el.classList.remove("bump");
+  // restart the animation even if it's already mid-play
+  void el.offsetWidth;
+  el.classList.add("bump");
 }
 
 function renderDare(dare) {
@@ -66,6 +75,7 @@ function renderDare(dare) {
   els.dareText.textContent = dare.text;
   els.dareTime.textContent = dare.time === "short" ? "~10 min" : dare.time === "medium" ? "~20 min" : "~40 min";
   els.dareEnergy.textContent = `${dare.energy} energy`;
+  els.pitch.classList.add("hidden");
   els.dareCard.classList.remove("hidden");
   els.proofBtn.classList.remove("hidden");
 }
@@ -102,8 +112,14 @@ async function generateDare(context) {
       console.warn("model generation failed, falling back to dare bank", err);
     }
   }
-  const bank = await loadDaresBank();
-  return pickFromBank(bank, context);
+  try {
+    const bank = await loadDaresBank();
+    return pickFromBank(bank, context);
+  } catch (err) {
+    // offline with nothing cached yet and no model — never leave the UI hanging
+    console.warn("dare bank unavailable, using built-in fallback dare", err);
+    return FALLBACK_DARE;
+  }
 }
 
 async function generateDareWithModel(context, token) {
@@ -169,6 +185,11 @@ async function speakWithElevenLabs(text, apiKey) {
   audio.play();
 }
 
+// ponytail: hardcoded single fallback, not a second dare bank — this is the
+// last-resort floor when both the model and the dares.json fetch fail (e.g.
+// offline with nothing cached yet). upgrade path: none needed, it's a floor.
+const FALLBACK_DARE = { text: "step outside for five minutes, no phone, and look around", time: "short", energy: "low" };
+
 let recognition = null;
 function setupSpeechRecognition() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -188,10 +209,13 @@ els.micBtn.addEventListener("click", async () => {
     // no speech recognition support — fall back to a generic dare with a typed hint
     els.micBtn.disabled = true;
     els.micHint.textContent = "voice not supported here, picking a generic dare...";
-    const dare = await generateDare({});
-    renderDare(dare);
-    speak(dare.text);
-    els.micBtn.disabled = false;
+    try {
+      const dare = await generateDare({});
+      renderDare(dare);
+      speak(dare.text);
+    } finally {
+      els.micBtn.disabled = false;
+    }
     return;
   }
 
@@ -203,10 +227,15 @@ els.micBtn.addEventListener("click", async () => {
     const transcript = e.results[0][0].transcript;
     els.micHint.textContent = `heard: "${transcript}" — finding a dare...`;
     const context = parseContext(transcript);
-    const dare = await generateDare(context);
-    renderDare(dare);
-    els.micHint.textContent = "say it again anytime for a new dare";
-    speak(dare.text);
+    try {
+      const dare = await generateDare(context);
+      renderDare(dare);
+      els.micHint.textContent = "say it again anytime for a new dare";
+      speak(dare.text);
+    } catch (err) {
+      console.warn("dare generation failed", err);
+      els.micHint.textContent = "couldn't come up with a dare, try again";
+    }
   };
 
   recognition.onerror = () => {
@@ -225,29 +254,41 @@ els.micBtn.addEventListener("click", async () => {
 let cameraStream = null;
 
 els.proofBtn.addEventListener("click", async () => {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    els.micHint.textContent = "camera isn't available on this device or browser";
+    return;
+  }
   try {
     cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
     els.cameraFeed.srcObject = cameraStream;
-    els.cameraModal.classList.remove("hidden");
+    showModal(els.cameraModal, els.proofBtn);
   } catch (err) {
-    alert("couldn't access camera: " + err.message);
+    els.micHint.textContent = err.name === "NotAllowedError" || err.name === "PermissionDeniedError"
+      ? "camera permission denied — allow camera access to add proof"
+      : "couldn't access camera: " + err.message;
   }
 });
 
-function closeCameraModal() {
+function stopCameraStream() {
   if (cameraStream) {
     cameraStream.getTracks().forEach(t => t.stop());
     cameraStream = null;
   }
-  els.cameraModal.classList.add("hidden");
 }
 
-els.cameraCancel.addEventListener("click", closeCameraModal);
+els.cameraCancel.addEventListener("click", () => hideModal(els.cameraModal));
 
 els.cameraSnap.addEventListener("click", () => {
   const canvas = els.cameraCanvas;
-  canvas.width = els.cameraFeed.videoWidth;
-  canvas.height = els.cameraFeed.videoHeight;
+  const w = els.cameraFeed.videoWidth;
+  const h = els.cameraFeed.videoHeight;
+  if (!w || !h) {
+    // video metadata hasn't loaded yet (very fast tap) — nothing to capture
+    els.micHint.textContent = "camera isn't ready yet, give it a second and try again";
+    return;
+  }
+  canvas.width = w;
+  canvas.height = h;
   const ctx = canvas.getContext("2d");
   ctx.drawImage(els.cameraFeed, 0, 0);
 
@@ -256,14 +297,18 @@ els.cameraSnap.addEventListener("click", () => {
   // on-device classifier if this proves too easy to fake and it matters.
   const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
   let sum = 0;
-  for (let i = 0; i < data.length; i += 4 * 97) sum += data[i] + data[i + 1] + data[i + 2];
-  const brightness = sum / (data.length / (4 * 97)) / 3;
+  let count = 0;
+  for (let i = 0; i < data.length; i += 4 * 97) {
+    sum += data[i] + data[i + 1] + data[i + 2];
+    count++;
+  }
+  const brightness = count ? sum / count / 3 : 0;
 
   els.proofThumb.src = canvas.toDataURL("image/jpeg", 0.8);
   els.proofThumb.classList.remove("hidden");
 
   recordProof(brightness > 60);
-  closeCameraModal();
+  hideModal(els.cameraModal);
 });
 
 function recordProof(looksOutside) {
@@ -282,6 +327,9 @@ function recordProof(looksOutside) {
 
   saveState(state);
   renderStats();
+  bumpStat(els.streakCount);
+  bumpStat(els.statDares);
+  bumpStat(els.statBest);
 
   if (!looksOutside) {
     els.micHint.textContent = "proof saved (looked a bit dim, but counted it)";
@@ -290,22 +338,66 @@ function recordProof(looksOutside) {
   }
 }
 
+// --- modal focus management (keyboard reachable + closable) ---
+const FOCUSABLE_SELECTOR = 'button, input, [href], select, textarea, [tabindex]:not([tabindex="-1"])';
+let modalTrigger = null;
+
+function trapModalKeydown(e) {
+  const modal = document.querySelector(".modal:not(.hidden)");
+  if (!modal) return;
+  if (e.key === "Escape") {
+    e.preventDefault();
+    hideModal(modal);
+    return;
+  }
+  if (e.key !== "Tab") return;
+  const focusable = Array.from(modal.querySelectorAll(FOCUSABLE_SELECTOR));
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
+}
+
+function showModal(modal, trigger) {
+  modalTrigger = trigger || document.activeElement;
+  modal.classList.remove("hidden");
+  const focusable = modal.querySelector(FOCUSABLE_SELECTOR);
+  if (focusable) focusable.focus();
+  document.addEventListener("keydown", trapModalKeydown);
+}
+
+function hideModal(modal) {
+  if (modal === els.cameraModal) stopCameraStream();
+  modal.classList.add("hidden");
+  document.removeEventListener("keydown", trapModalKeydown);
+  if (modalTrigger) {
+    modalTrigger.focus();
+    modalTrigger = null;
+  }
+}
+
 // --- settings ---
 els.settingsBtn.addEventListener("click", () => {
   const secrets = loadSecrets();
   els.hfToken.value = secrets.hfToken || "";
   els.elevenKey.value = secrets.elevenKey || "";
-  els.settingsModal.classList.remove("hidden");
+  showModal(els.settingsModal, els.settingsBtn);
 });
 
 els.settingsSave.addEventListener("click", () => {
   saveSecrets({ hfToken: els.hfToken.value.trim(), elevenKey: els.elevenKey.value.trim() });
-  els.settingsModal.classList.add("hidden");
+  hideModal(els.settingsModal);
 });
 
 document.querySelectorAll(".modal").forEach(modal => {
   modal.addEventListener("click", (e) => {
-    if (e.target === modal) modal.classList.add("hidden");
+    if (e.target === modal) hideModal(modal);
   });
 });
 
