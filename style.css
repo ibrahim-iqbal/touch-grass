@@ -1,32 +1,36 @@
 :root {
-  --bg: #f5f3ea;
-  --card: #ffffff;
+  --bg: #efe9d8;
+  --card: #fffdf7;
   --text: #20241f;
   --text-muted: #5c6054;
   --border: #e1ddcd;
   --green: #0f6e56;
   --green-light: #e1f5ee;
   --green-text: #085041;
-  --amber: #ba7517;
+  --amber: #c97d1e;
+  --shadow: 0 1px 2px rgba(20, 24, 18, 0.06), 0 16px 40px -12px rgba(20, 24, 18, 0.18);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #15170f;
-    --card: #1f2219;
+    --bg: #11140d;
+    --card: #1b2016;
     --text: #eceae0;
     --text-muted: #9a9c8f;
     --border: #2c2f25;
     --green-light: #0f3a2f;
     --green-text: #9fe1cb;
+    --amber: #e3a14f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 24px 60px -16px rgba(0, 0, 0, 0.6);
   }
 }
 
 * { box-sizing: border-box; }
 
+html, body { height: 100%; }
+
 body {
   margin: 0;
-  background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   line-height: 1.4;
@@ -34,30 +38,62 @@ body {
 
 .hidden { display: none !important; }
 
-.screen {
-  max-width: 420px;
-  margin: 0 auto;
-  padding: 20px 18px 40px;
+/* --- page: full-bleed outdoor backdrop behind the app card --- */
+.page {
+  position: relative;
   min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  overflow: hidden;
+  background:
+    radial-gradient(60% 50% at 18% 12%, color-mix(in srgb, var(--amber) 22%, transparent), transparent 70%),
+    radial-gradient(55% 45% at 88% 85%, color-mix(in srgb, var(--green) 24%, transparent), transparent 70%),
+    var(--bg);
+}
+
+.field-decor {
+  position: absolute;
+  inset: -10%;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(100deg, color-mix(in srgb, var(--green) 7%, transparent) 0px, transparent 2px 46px),
+    repeating-linear-gradient(80deg, color-mix(in srgb, var(--green) 5%, transparent) 0px, transparent 2px 64px);
+  opacity: 0.6;
+  mask-image: radial-gradient(70% 70% at 50% 40%, black, transparent 90%);
+}
+
+.app-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  background: var(--card);
+  border-radius: 28px;
+  border: 0.5px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 24px 22px 28px;
 }
 
 .top-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 
 .streak {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   font-size: 14px;
   font-weight: 600;
 }
 
 .streak .flame {
-  display: inline-block;
+  display: inline-flex;
+  color: var(--amber);
   transition: transform 0.3s ease;
 }
 
@@ -67,12 +103,14 @@ body {
 }
 
 .icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
-  border-radius: 8px;
-  font-size: 18px;
-  width: 34px;
-  height: 34px;
+  border-radius: 10px;
+  width: 36px;
+  height: 36px;
   color: var(--text-muted);
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
@@ -89,9 +127,9 @@ body {
 
 .dare-card {
   background: var(--green-light);
-  border-radius: 14px;
-  padding: 16px;
-  margin-bottom: 18px;
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 20px;
   border-left: 3px solid var(--green);
   animation: dare-in 0.25s ease;
 }
@@ -106,7 +144,7 @@ body {
 }
 
 .dare-text {
-  font-size: 16px;
+  font-size: 17px;
   line-height: 1.5;
   margin: 0 0 12px;
 }
@@ -126,29 +164,32 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 28px 0;
+  margin: 32px 0;
 }
 
 .pitch {
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 500;
   color: var(--text);
   text-align: center;
   max-width: 260px;
-  margin: 0 0 18px;
+  margin: 0 0 22px;
   line-height: 1.5;
 }
 
 .mic-btn {
-  width: 72px;
-  height: 72px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
   border-radius: 50%;
   background: var(--green);
   border: none;
-  font-size: 28px;
   color: white;
   cursor: pointer;
   transition: transform 0.12s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-  box-shadow: 0 0 0 0 var(--green-light);
+  box-shadow: 0 10px 24px -8px color-mix(in srgb, var(--green) 70%, transparent), 0 0 0 0 var(--green-light);
 }
 
 .mic-btn:hover:not(:disabled) {
@@ -165,28 +206,33 @@ body {
 }
 
 .mic-btn.listening {
-  box-shadow: 0 0 0 6px var(--green-light);
+  box-shadow: 0 10px 24px -8px color-mix(in srgb, var(--green) 70%, transparent), 0 0 0 6px var(--green-light);
   animation: mic-pulse 1.4s ease-out infinite;
 }
 
 .mic-hint {
   font-size: 12px;
   color: var(--text-muted);
-  margin-top: 10px;
+  margin-top: 12px;
   text-align: center;
   min-height: 15px;
   transition: color 0.2s ease;
 }
 
 .proof-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   width: 100%;
-  padding: 12px;
+  padding: 13px;
   margin-bottom: 20px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 0.5px solid var(--border);
   background: var(--card);
   color: var(--text);
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
 }
@@ -208,8 +254,8 @@ body {
 
 .proof-thumb {
   width: 100%;
-  border-radius: 10px;
-  margin: -8px 0 20px;
+  border-radius: 12px;
+  margin: -6px 0 20px;
   display: block;
   border: 0.5px solid var(--border);
   animation: dare-in 0.3s ease;
@@ -219,18 +265,18 @@ body {
   display: flex;
   justify-content: space-between;
   border-top: 0.5px solid var(--border);
-  padding-top: 14px;
+  padding-top: 16px;
 }
 
 .stat { text-align: center; }
-.stat-num { font-size: 18px; font-weight: 600; margin: 0; display: inline-block; }
+.stat-num { font-size: 19px; font-weight: 600; margin: 0; display: inline-block; }
 .stat-num.bump { animation: bump 0.4s ease; }
-.stat-label { font-size: 11px; color: var(--text-muted); margin: 0; }
+.stat-label { font-size: 11px; color: var(--text-muted); margin: 2px 0 0; }
 
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(10, 12, 8, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -239,16 +285,17 @@ body {
 
 .modal-inner {
   background: var(--card);
-  border-radius: 14px;
-  padding: 20px;
+  border-radius: 18px;
+  padding: 22px;
   width: 100%;
   max-width: 400px;
+  box-shadow: var(--shadow);
   animation: modal-in 0.18s ease;
 }
 
 #camera-feed, #camera-canvas {
   width: 100%;
-  border-radius: 10px;
+  border-radius: 12px;
   margin-bottom: 14px;
   background: #000;
 }
@@ -258,7 +305,7 @@ body {
 .btn {
   flex: 1;
   padding: 10px;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 0.5px solid var(--border);
   background: var(--card);
   color: var(--text);
@@ -278,7 +325,7 @@ body {
 
 .btn-primary:hover { opacity: 0.9; }
 
-.settings-inner h2 { font-size: 16px; margin: 0 0 14px; }
+.settings-inner h2 { font-size: 17px; margin: 0 0 16px; }
 
 .field-label {
   display: block;
@@ -289,8 +336,8 @@ body {
 
 .field {
   width: 100%;
-  padding: 10px;
-  border-radius: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
   border: 0.5px solid var(--border);
   background: var(--bg);
   color: var(--text);
@@ -328,7 +375,32 @@ body {
 }
 
 @keyframes mic-pulse {
-  0% { box-shadow: 0 0 0 0 var(--green-light); }
-  70% { box-shadow: 0 0 0 10px transparent; }
-  100% { box-shadow: 0 0 0 0 transparent; }
+  0% { box-shadow: 0 10px 24px -8px color-mix(in srgb, var(--green) 70%, transparent), 0 0 0 0 var(--green-light); }
+  70% { box-shadow: 0 10px 24px -8px color-mix(in srgb, var(--green) 70%, transparent), 0 0 0 10px transparent; }
+  100% { box-shadow: 0 10px 24px -8px color-mix(in srgb, var(--green) 70%, transparent), 0 0 0 0 transparent; }
+}
+
+/* on an actual phone there's no "desktop void" to float a card in —
+   the app becomes the full screen, backdrop stays as a faint texture */
+@media (max-width: 480px) {
+  .page {
+    padding: 0;
+    align-items: stretch;
+  }
+
+  .app-card {
+    max-width: none;
+    min-height: 100vh;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 24px 20px 32px;
+  }
+
+  .field-decor {
+    opacity: 0.4;
+  }
 }
