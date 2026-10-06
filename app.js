@@ -59,6 +59,12 @@ const els = {
   scene: document.querySelector(".scene"),
   player: document.getElementById("player"),
   clouds: document.querySelector(".clouds"),
+  levelNum: document.getElementById("level-num"),
+  rankTitle: document.getElementById("rank-title"),
+  xpFill: document.getElementById("xp-fill"),
+  xpBar: document.getElementById("xp-bar"),
+  streakPips: document.getElementById("streak-pips"),
+  badges: document.getElementById("badges"),
 };
 
 // ponytail: dares-done clouds are capped so the sky doesn't fill up forever —
@@ -102,14 +108,78 @@ function worldTier(daresDone) {
   return 0;
 }
 
+// --- hud: level, xp, streak pips, badges ---
+const RANKS = ["newcomer", "wanderer", "trailblazer", "pathfinder", "ranger", "grass master"];
+const XP_PER_LEVEL = 3;
+
+function computeLevel(daresDone) {
+  const level = Math.floor(daresDone / XP_PER_LEVEL) + 1;
+  const xpInLevel = daresDone % XP_PER_LEVEL;
+  const title = RANKS[Math.min(level - 1, RANKS.length - 1)];
+  return { level, xpInLevel, xpToNext: XP_PER_LEVEL, title };
+}
+
+const FLAME_ICON = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 3-2 4-2 7a4 4 0 0 0 8 0c0-1-.5-2-1-2 .5 2-1 3-2 2 1-2-1-3-1-5z"/></svg>';
+
+const BADGES = [
+  { id: "first_dare", label: "first dare done", test: s => s.daresDone >= 1,
+    icon: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c0-6 4-10 8-11-1 6-4 10-8 11z"/><path d="M12 22c0-6-4-10-8-11 1 6 4 10 8 11z"/></svg>' },
+  { id: "streak_3", label: "3 day streak", test: s => s.bestStreak >= 3,
+    icon: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 3-2 4-2 7a4 4 0 0 0 8 0c0-1-.5-2-1-2 .5 2-1 3-2 2 1-2-1-3-1-5z"/></svg>' },
+  { id: "streak_7", label: "7 day streak", test: s => s.bestStreak >= 7,
+    icon: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 11 14 9 22 21 10 13 10 13 2"/></svg>' },
+  { id: "hour_outside", label: "1 hour outside total", test: s => s.outsideMinutes >= 60,
+    icon: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg>' },
+];
+
+let unlockedBadgeIds = new Set();
+
+function renderBadges(detectNew) {
+  const nowUnlocked = new Set(BADGES.filter(b => b.test(state)).map(b => b.id));
+  els.badges.innerHTML = "";
+  for (const badge of BADGES) {
+    const isUnlocked = nowUnlocked.has(badge.id);
+    const isNew = detectNew && isUnlocked && !unlockedBadgeIds.has(badge.id);
+    const el = document.createElement("div");
+    el.className = "badge" + (isUnlocked ? " unlocked" : "") + (isNew ? " just-unlocked" : "");
+    el.title = badge.label;
+    el.setAttribute("aria-label", (isUnlocked ? "unlocked: " : "locked: ") + badge.label);
+    el.innerHTML = badge.icon;
+    els.badges.appendChild(el);
+  }
+  unlockedBadgeIds = nowUnlocked;
+}
+
+function renderHud(detectNewBadges) {
+  const { level, xpInLevel, xpToNext, title } = computeLevel(state.daresDone);
+  els.levelNum.textContent = level;
+  els.rankTitle.textContent = title;
+  const pct = Math.round((xpInLevel / xpToNext) * 100);
+  els.xpFill.style.width = `${pct}%`;
+  els.xpBar.setAttribute("aria-valuenow", String(pct));
+
+  const maxPips = 7;
+  const lit = Math.min(state.streak, maxPips);
+  els.streakPips.innerHTML = "";
+  for (let i = 0; i < maxPips; i++) {
+    const pip = document.createElement("span");
+    pip.className = "pip" + (i < lit ? " lit" : "");
+    if (i < lit) pip.innerHTML = FLAME_ICON;
+    els.streakPips.appendChild(pip);
+  }
+  els.streakCount.textContent = state.streak > maxPips ? `+${state.streak - maxPips}` : String(state.streak);
+
+  renderBadges(detectNewBadges);
+}
+
 function renderStats(animateNewestCloud) {
-  els.streakCount.textContent = `${state.streak} day streak`;
   els.statDares.textContent = state.daresDone;
   els.statTime.textContent = `${state.outsideMinutes}m`;
   els.statBest.textContent = state.bestStreak;
   if (state.daresDone > 0) els.pitch.classList.add("hidden");
   els.scene.dataset.tier = String(worldTier(state.daresDone));
   renderDareClouds(state.daresDone, animateNewestCloud);
+  renderHud(animateNewestCloud);
 }
 
 function bumpStat(el) {

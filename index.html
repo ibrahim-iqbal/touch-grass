@@ -59,11 +59,14 @@
   <main class="game-window">
 
     <header class="top-bar">
-      <div class="streak">
-        <span class="flame">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 3-2 4-2 7a4 4 0 0 0 8 0c0-1-.5-2-1-2 .5 2-1 3-2 2 1-2-1-3-1-5 0-1 .5-2 1-3-2 0-3.5 1.5-3 3-1-1-1-2 0-2z"/><path d="M8 14a4 4 0 1 0 8 0c0-2-1-3-2-5-1 3-4 3-4 5 0 1 .5 2 0 2-1-.5-2-1-2-2z"/></svg>
-        </span>
-        <span id="streak-count">0 day streak</span>
+      <div class="level-badge">
+        <span id="level-num" class="level-num">1</span>
+      </div>
+      <div class="level-info">
+        <p id="rank-title" class="rank-title">newcomer</p>
+        <div class="xp-bar" role="progressbar" aria-label="experience to next level" aria-valuemin="0" aria-valuemax="100" id="xp-bar">
+          <div id="xp-fill" class="xp-fill"></div>
+        </div>
       </div>
       <div class="top-bar-actions">
         <button id="theme-btn" class="icon-btn" aria-label="toggle light and dark mode">
@@ -75,6 +78,14 @@
         </button>
       </div>
     </header>
+
+    <div class="streak-row">
+      <span class="streak-label">streak</span>
+      <div id="streak-pips" class="streak-pips"></div>
+      <span id="streak-count" class="streak-count">0</span>
+    </div>
+
+    <div id="badges" class="badges"></div>
 
     <section id="dare-card" class="quest-box hidden">
       <p class="quest-label">◆ quest ◆</p>
