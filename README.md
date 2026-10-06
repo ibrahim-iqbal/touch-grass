@@ -34,9 +34,7 @@ built-in voice — still fully usable, just less smart.
 
 ## icon
 
-`icon.svg` is the app icon (favicon, apple-touch-icon, manifest icon). All
-modern browsers and Android accept an SVG manifest icon directly. iOS Safari
-ignores SVG for the home-screen icon, so if you want a proper iOS "Add to
-Home Screen" icon, export `icon.svg` to a 180x180 PNG (e.g. `icon-180.png`)
-and add `<link rel="apple-touch-icon" href="icon-180.png">` above the SVG
-fallback.
+`icon.svg` is the favicon and manifest icon — all modern browsers and
+Android accept SVG there directly. `icon-180.png` is a rasterized copy for
+iOS Safari's "Add to Home Screen", which ignores SVG. If the icon design
+changes, re-export `icon-180.png` from `icon.svg` at 180x180.

@@ -1,5 +1,5 @@
 const CACHE = "touchgrass-v1";
-const SHELL = ["./", "index.html", "style.css", "app.js", "dares.json", "manifest.json", "icon.svg"];
+const SHELL = ["./", "index.html", "style.css", "app.js", "dares.json", "manifest.json", "icon.svg", "icon-180.png"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)));
