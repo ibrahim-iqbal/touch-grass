@@ -1,0 +1,14 @@
+[
+  { "text": "walk to the nearest patch of grass and name three plants you don't recognize", "time": "short", "energy": "low" },
+  { "text": "find the tallest tree you can see from your door and go stand under it", "time": "short", "energy": "low" },
+  { "text": "sit outside for five minutes with no phone, just notice three sounds", "time": "short", "energy": "low" },
+  { "text": "walk around the block and take a photo of the ugliest plant you find", "time": "medium", "energy": "low" },
+  { "text": "jog to the nearest corner and back, touch a tree before you turn around", "time": "short", "energy": "high" },
+  { "text": "find a bench you've never sat on and read something for ten minutes", "time": "medium", "energy": "low" },
+  { "text": "do 20 jumping jacks on the grass, barefoot if you can handle it", "time": "short", "energy": "high" },
+  { "text": "walk until you find running water, even a gutter, and follow it for a bit", "time": "medium", "energy": "medium" },
+  { "text": "find the highest point nearby you can walk to and look at the view for a minute", "time": "long", "energy": "medium" },
+  { "text": "pick up five pieces of litter on your next walk outside", "time": "short", "energy": "medium" },
+  { "text": "lie on the grass and find one cloud shaped like something", "time": "short", "energy": "low" },
+  { "text": "walk to a park bench, sit, and text a friend one honest thing about your day", "time": "medium", "energy": "low" }
+]
