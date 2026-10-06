@@ -11,8 +11,20 @@
   --shadow: 0 1px 2px rgba(20, 24, 18, 0.06), 0 16px 40px -12px rgba(20, 24, 18, 0.18);
 }
 
+:root[data-theme="dark"] {
+  --bg: #11140d;
+  --card: #1b2016;
+  --text: #eceae0;
+  --text-muted: #9a9c8f;
+  --border: #2c2f25;
+  --green-light: #0f3a2f;
+  --green-text: #9fe1cb;
+  --amber: #e3a14f;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 24px 60px -16px rgba(0, 0, 0, 0.6);
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #11140d;
     --card: #1b2016;
     --text: #eceae0;
@@ -100,6 +112,12 @@ body {
 #streak-count.bump,
 .streak:has(#streak-count.bump) .flame {
   animation: bump 0.4s ease;
+}
+
+.top-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .icon-btn {

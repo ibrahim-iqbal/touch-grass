@@ -43,6 +43,9 @@ const els = {
   statDares: document.getElementById("stat-dares"),
   statTime: document.getElementById("stat-time"),
   statBest: document.getElementById("stat-best"),
+  themeBtn: document.getElementById("theme-btn"),
+  themeIconDark: document.getElementById("theme-icon-dark"),
+  themeIconLight: document.getElementById("theme-icon-light"),
   settingsBtn: document.getElementById("settings-btn"),
   settingsModal: document.getElementById("settings-modal"),
   settingsSave: document.getElementById("settings-save"),
@@ -381,6 +384,37 @@ function hideModal(modal) {
     modalTrigger = null;
   }
 }
+
+// --- theme ---
+const THEME_KEY = "touchgrass_theme";
+
+function effectiveTheme() {
+  const explicit = document.documentElement.getAttribute("data-theme");
+  if (explicit) return explicit;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function applyThemeIcon() {
+  const dark = effectiveTheme() === "dark";
+  // icon shown is what tapping switches TO
+  els.themeIconDark.classList.toggle("hidden", dark);
+  els.themeIconLight.classList.toggle("hidden", !dark);
+}
+
+(function initTheme() {
+  try {
+    const stored = localStorage.getItem(THEME_KEY);
+    if (stored) document.documentElement.setAttribute("data-theme", stored);
+  } catch {}
+  applyThemeIcon();
+})();
+
+els.themeBtn.addEventListener("click", () => {
+  const next = effectiveTheme() === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  try { localStorage.setItem(THEME_KEY, next); } catch {}
+  applyThemeIcon();
+});
 
 // --- settings ---
 els.settingsBtn.addEventListener("click", () => {
