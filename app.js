@@ -38,6 +38,7 @@ const els = {
   micBtn: document.getElementById("mic-btn"),
   micHint: document.getElementById("mic-hint"),
   proofBtn: document.getElementById("proof-btn"),
+  proofThumb: document.getElementById("proof-thumb"),
   statDares: document.getElementById("stat-dares"),
   statTime: document.getElementById("stat-time"),
   statBest: document.getElementById("stat-best"),
@@ -180,26 +181,31 @@ function setupSpeechRecognition() {
 }
 
 els.micBtn.addEventListener("click", async () => {
+  if (els.micBtn.disabled) return;
   if (!recognition) recognition = setupSpeechRecognition();
 
   if (!recognition) {
     // no speech recognition support — fall back to a generic dare with a typed hint
-    els.micHint.textContent = "voice not supported here, picking a generic dare";
+    els.micBtn.disabled = true;
+    els.micHint.textContent = "voice not supported here, picking a generic dare...";
     const dare = await generateDare({});
     renderDare(dare);
     speak(dare.text);
+    els.micBtn.disabled = false;
     return;
   }
 
+  els.micBtn.disabled = true;
   els.micBtn.classList.add("listening");
   els.micHint.textContent = "listening...";
 
   recognition.onresult = async (e) => {
     const transcript = e.results[0][0].transcript;
-    els.micHint.textContent = `heard: "${transcript}"`;
+    els.micHint.textContent = `heard: "${transcript}" — finding a dare...`;
     const context = parseContext(transcript);
     const dare = await generateDare(context);
     renderDare(dare);
+    els.micHint.textContent = "say it again anytime for a new dare";
     speak(dare.text);
   };
 
@@ -209,6 +215,7 @@ els.micBtn.addEventListener("click", async () => {
 
   recognition.onend = () => {
     els.micBtn.classList.remove("listening");
+    els.micBtn.disabled = false;
   };
 
   recognition.start();
@@ -252,13 +259,19 @@ els.cameraSnap.addEventListener("click", () => {
   for (let i = 0; i < data.length; i += 4 * 97) sum += data[i] + data[i + 1] + data[i + 2];
   const brightness = sum / (data.length / (4 * 97)) / 3;
 
+  els.proofThumb.src = canvas.toDataURL("image/jpeg", 0.8);
+  els.proofThumb.classList.remove("hidden");
+
   recordProof(brightness > 60);
   closeCameraModal();
 });
 
 function recordProof(looksOutside) {
   const today = new Date().toDateString();
-  if (state.lastProofDate === today) return; // already counted today
+  if (state.lastProofDate === today) {
+    els.micHint.textContent = "already counted today, nice work";
+    return;
+  }
 
   const yesterday = new Date(Date.now() - 86400000).toDateString();
   state.streak = state.lastProofDate === yesterday ? state.streak + 1 : 1;

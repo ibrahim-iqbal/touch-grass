@@ -10,5 +10,8 @@
   { "text": "find the highest point nearby you can walk to and look at the view for a minute", "time": "long", "energy": "medium" },
   { "text": "pick up five pieces of litter on your next walk outside", "time": "short", "energy": "medium" },
   { "text": "lie on the grass and find one cloud shaped like something", "time": "short", "energy": "low" },
-  { "text": "walk to a park bench, sit, and text a friend one honest thing about your day", "time": "medium", "energy": "low" }
+  { "text": "walk to a park bench, sit, and text a friend one honest thing about your day", "time": "medium", "energy": "low" },
+  { "text": "find a hill or a flight of outdoor steps and go up and down it three times", "time": "medium", "energy": "high" },
+  { "text": "go for a real run outside, no treadmill, until you've worked up a sweat", "time": "long", "energy": "high" },
+  { "text": "take the long way to somewhere you're already going, on foot, no headphones", "time": "long", "energy": "low" }
 ]
