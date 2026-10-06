@@ -58,7 +58,40 @@ const els = {
   cameraCancel: document.getElementById("camera-cancel"),
   scene: document.querySelector(".scene"),
   player: document.getElementById("player"),
+  clouds: document.querySelector(".clouds"),
 };
+
+// ponytail: dares-done clouds are capped so the sky doesn't fill up forever —
+// upgrade path is a "cleared the sky" milestone if this ever feels limiting.
+const MAX_DARE_CLOUDS = 8;
+
+function renderDareClouds(daresDone, animateNewest) {
+  els.clouds.querySelectorAll(".dare-cloud").forEach(c => c.remove());
+  const count = Math.min(daresDone, MAX_DARE_CLOUDS);
+  for (let i = 0; i < count; i++) {
+    const isNewest = animateNewest && i === count - 1;
+    spawnCloud(isNewest, i);
+  }
+}
+
+function spawnCloud(isNew, seed) {
+  const cloud = document.createElement("span");
+  cloud.className = "cloud dare-cloud" + (isNew ? " cloud-new" : "");
+  const rand = (min, max, s) => min + ((Math.sin(s * 999) + 1) / 2) * (max - min);
+  const size = rand(26, 50, seed + 1);
+  cloud.style.width = `${size}px`;
+  cloud.style.height = `${size * 0.42}px`;
+  cloud.style.top = `${rand(4, 34, seed + 2)}%`;
+  cloud.style.left = isNew ? "-90px" : `${rand(0, 100, seed + 3)}%`;
+  if (isNew) {
+    cloud.style.setProperty("--cloud-drift-duration", `${rand(40, 65, seed + 4)}s`);
+  } else {
+    cloud.style.animationDuration = `${rand(40, 65, seed + 4)}s`;
+    cloud.style.animationDelay = `-${rand(0, 40, seed + 5)}s`;
+  }
+  els.clouds.appendChild(cloud);
+  if (isNew) setTimeout(() => cloud.classList.remove("cloud-new"), 1200);
+}
 
 // ponytail: simple dare-count thresholds, not a real progression system —
 // upgrade path is tuning these numbers once real usage data exists.
@@ -69,13 +102,14 @@ function worldTier(daresDone) {
   return 0;
 }
 
-function renderStats() {
+function renderStats(animateNewestCloud) {
   els.streakCount.textContent = `${state.streak} day streak`;
   els.statDares.textContent = state.daresDone;
   els.statTime.textContent = `${state.outsideMinutes}m`;
   els.statBest.textContent = state.bestStreak;
   if (state.daresDone > 0) els.pitch.classList.add("hidden");
   els.scene.dataset.tier = String(worldTier(state.daresDone));
+  renderDareClouds(state.daresDone, animateNewestCloud);
 }
 
 function bumpStat(el) {
@@ -359,7 +393,7 @@ function recordProof(looksOutside) {
   state.lastProofDate = today;
 
   saveState(state);
-  renderStats();
+  renderStats(true);
   bumpStat(els.streakCount);
   bumpStat(els.statDares);
   bumpStat(els.statBest);

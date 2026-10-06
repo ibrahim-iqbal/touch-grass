@@ -1,9 +1,12 @@
 :root {
-  --sky-top: #6ec6e8;
-  --sky-bottom: #cdeaf0;
-  --sun: #ffd23f;
+  --sky-top: #4fa8dd;
+  --sky-mid: #7fcbe8;
+  --sky-low: #bfe6e8;
+  --sky-horizon: #ffe3b0;
+  --hill-haze: #a9cfa0;
   --hill-far: #7fb86b;
   --hill-near: #4f9950;
+  --snow: #f5faf2;
   --grass: #3f8a4a;
   --grass-dark: #2f6e3a;
   --tree: #2e6b3e;
@@ -15,7 +18,7 @@
   --paper: #eee3c2;
   --paper-text: #2a2210;
   --text: #f1f3e8;
-  --text-muted: #b9c2ab;
+  --text-muted: #c7d0ba;
   --green: #4caf6e;
   --green-dark: #2f6e3a;
   --amber: #ffb627;
@@ -25,11 +28,15 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --sky-top: #0c1430;
-    --sky-bottom: #2a2a55;
+    --sky-top: #080c24;
+    --sky-mid: #171c42;
+    --sky-low: #2a2a55;
+    --sky-horizon: #4a3a68;
+    --hill-haze: #24331f;
     --sun: #d8d8e8;
     --hill-far: #1f3a2a;
     --hill-near: #14291c;
+    --snow: #dfe4ea;
     --grass: #16321e;
     --grass-dark: #0e2114;
     --tree: #0a1c10;
@@ -41,11 +48,15 @@
 }
 
 :root[data-theme="dark"] {
-  --sky-top: #0c1430;
-  --sky-bottom: #2a2a55;
+  --sky-top: #080c24;
+  --sky-mid: #171c42;
+  --sky-low: #2a2a55;
+  --sky-horizon: #4a3a68;
+  --hill-haze: #24331f;
   --sun: #d8d8e8;
   --hill-far: #1f3a2a;
   --hill-near: #14291c;
+  --snow: #dfe4ea;
   --grass: #16321e;
   --grass-dark: #0e2114;
   --tree: #0a1c10;
@@ -95,7 +106,17 @@ body {
 .sky {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-bottom) 70%);
+  background: linear-gradient(
+    to bottom,
+    var(--sky-top) 0%,
+    var(--sky-top) 30%,
+    var(--sky-mid) 30%,
+    var(--sky-mid) 55%,
+    var(--sky-low) 55%,
+    var(--sky-low) 78%,
+    var(--sky-horizon) 78%,
+    var(--sky-horizon) 100%
+  );
   transition: background 0.4s ease;
 }
 
@@ -150,6 +171,25 @@ body {
 .cloud-2 { top: 26%; width: 46px; height: 20px; left: -70px; animation: drift 52s linear infinite; animation-delay: -20s; }
 .cloud-3 { top: 8%; width: 38px; height: 17px; left: -60px; animation: drift 44s linear infinite; animation-delay: -10s; }
 
+/* each completed dare leaves a cloud drifting in the sky, duration/delay set inline per cloud */
+.dare-cloud {
+  animation-name: drift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.cloud-new {
+  animation-name: cloud-pop-in, drift;
+  animation-duration: 0.6s, var(--cloud-drift-duration, 50s);
+  animation-timing-function: ease-out, linear;
+  animation-iteration-count: 1, infinite;
+}
+
+@keyframes cloud-pop-in {
+  from { opacity: 0; transform: scale(0.3) translateY(10px); }
+  to { opacity: 0.95; transform: scale(1) translateY(0); }
+}
+
 @keyframes drift {
   from { transform: translateX(0); }
   to { transform: translateX(calc(100vw + 160px)); }
@@ -157,10 +197,33 @@ body {
 
 .hills { position: absolute; left: 0; width: 100%; }
 
+.hills-haze {
+  bottom: 16%;
+  height: 30vh;
+  opacity: 0.75;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--hill-haze) 60%, var(--sky-low)) 0%, var(--hill-haze) 85%);
+  clip-path: polygon(
+    0% 100%, 0% 65%, 10% 65%, 10% 35%, 18% 35%, 18% 10%, 26% 10%, 26% 42%,
+    38% 42%, 38% 55%, 48% 55%, 48% 22%, 58% 22%, 58% 15%, 65% 15%, 65% 38%,
+    78% 38%, 78% 58%, 90% 58%, 90% 45%, 100% 45%, 100% 100%
+  );
+}
+
+.snow-cap {
+  position: absolute;
+  width: 0; height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 8px solid var(--snow);
+}
+
+.snow-cap-1 { left: calc(18% - 6px); top: 10%; }
+.snow-cap-2 { left: calc(65% - 6px); top: 15%; }
+
 .hills-far {
   bottom: 12%;
   height: 22vh;
-  background: var(--hill-far);
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--hill-far) 75%, white) 0%, var(--hill-far) 65%);
   clip-path: polygon(
     0% 100%, 0% 55%, 8% 55%, 8% 40%, 20% 40%, 20% 25%, 34% 25%, 34% 15%,
     48% 15%, 48% 30%, 62% 30%, 62% 45%, 76% 45%, 76% 35%, 88% 35%, 88% 50%,
@@ -171,7 +234,7 @@ body {
 .hills-near {
   bottom: 6%;
   height: 18vh;
-  background: var(--hill-near);
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--hill-near) 70%, white) 0%, var(--hill-near) 60%);
   clip-path: polygon(
     0% 100%, 0% 60%, 10% 60%, 10% 45%, 24% 45%, 24% 30%, 38% 30%, 38% 48%,
     52% 48%, 52% 20%, 66% 20%, 66% 42%, 80% 42%, 80% 55%, 92% 55%, 92% 38%,
@@ -387,9 +450,10 @@ body {
 .streak {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 10px;
-  letter-spacing: 0.02em;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .streak .flame {
@@ -447,28 +511,30 @@ body {
 
 .quest-label {
   font-family: "Press Start 2P", monospace;
-  font-size: 9px;
-  letter-spacing: 0.06em;
+  font-size: 10px;
+  letter-spacing: 0.1em;
   color: var(--green-dark);
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   text-align: center;
 }
 
 .dare-text {
-  font-size: 15px;
-  line-height: 1.5;
-  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.55;
+  margin: 0 0 14px;
 }
 
-.dare-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.dare-tags { display: flex; gap: 7px; flex-wrap: wrap; }
 
 .tag {
   font-family: "Press Start 2P", monospace;
-  font-size: 8px;
+  font-size: 9px;
+  letter-spacing: 0.02em;
   background: var(--window-bg);
   color: var(--text);
   border: 2px solid var(--ink);
-  padding: 4px 6px;
+  padding: 5px 7px;
 }
 
 .mic-section {
@@ -479,7 +545,7 @@ body {
 }
 
 .pitch {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--text);
   text-align: center;
@@ -516,10 +582,11 @@ body {
 }
 
 .mic-hint {
-  font-size: 11px;
+  font-size: 12.5px;
   color: var(--text-muted);
   margin-top: 12px;
   text-align: center;
+  line-height: 1.4;
   min-height: 15px;
 }
 
@@ -534,7 +601,8 @@ body {
   background: var(--window-bg-2);
   border: 2px solid var(--ink);
   color: var(--text);
-  font-size: 11px;
+  font-size: 12.5px;
+  font-weight: 500;
   cursor: pointer;
   transition: transform 0.08s ease;
 }
@@ -561,18 +629,19 @@ body {
 .stat { text-align: center; }
 .stat-num {
   font-family: "Press Start 2P", monospace;
-  font-size: 15px;
+  font-size: 17px;
   color: var(--amber);
   margin: 0;
   display: inline-block;
 }
 .stat-num.bump { animation: bump 0.4s ease; }
 .stat-label {
-  font-size: 10px;
+  font-size: 11px;
+  font-weight: 600;
   color: var(--text-muted);
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 
 .modal {
@@ -613,7 +682,8 @@ body {
   background: var(--window-bg-2);
   color: var(--text);
   cursor: pointer;
-  font-size: 11px;
+  font-size: 13px;
+  font-weight: 500;
   transition: transform 0.08s ease;
 }
 
