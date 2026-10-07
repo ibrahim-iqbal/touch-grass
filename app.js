@@ -336,7 +336,38 @@ function setupSpeechRecognition() {
   return rec;
 }
 
+// ponytail: the browser's own no-speech timeout isn't reliable everywhere —
+// confirmed by hand: recognition can sit in "listening" with zero events
+// (no result, no error, no end) indefinitely. This timeout plus letting the
+// mic button act as a cancel-while-listening control are the fix, not a
+// nice-to-have — without them the UI traps the user with no way out but reload.
+let listenTimeoutId = null;
+const LISTEN_TIMEOUT_MS = 10000;
+
+function stopListeningUI() {
+  clearTimeout(listenTimeoutId);
+  listenTimeoutId = null;
+  els.micBtn.classList.remove("listening");
+  els.player.classList.remove("listening");
+  els.micBtn.disabled = false;
+  // confirmed by hand: the browser's own silence auto-stop sometimes wins the
+  // race against our explicit timeout above, firing onend with no result and
+  // no error — if nothing else already explained what happened, say so here
+  // instead of leaving the stale "listening..." text behind.
+  if (els.micHint.textContent === "listening... (tap to cancel)") {
+    els.micHint.textContent = "didn't hear anything, try again";
+  }
+}
+
 els.micBtn.addEventListener("click", async () => {
+  if (els.micBtn.classList.contains("listening")) {
+    // tap again to cancel — set the hint now since onend (stopListeningUI)
+    // only resets button/player state, not this text, and doing it here
+    // avoids racing a real onresult message that might land after stop()
+    els.micHint.textContent = "cancelled, tap to try again";
+    recognition?.stop();
+    return;
+  }
   if (els.micBtn.disabled) return;
   if (!recognition) recognition = setupSpeechRecognition();
 
@@ -354,10 +385,14 @@ els.micBtn.addEventListener("click", async () => {
     return;
   }
 
-  els.micBtn.disabled = true;
   els.micBtn.classList.add("listening");
   els.player.classList.add("listening");
-  els.micHint.textContent = "listening...";
+  els.micHint.textContent = "listening... (tap to cancel)";
+
+  listenTimeoutId = setTimeout(() => {
+    els.micHint.textContent = "didn't hear anything, try again";
+    recognition?.stop();
+  }, LISTEN_TIMEOUT_MS);
 
   recognition.onresult = async (e) => {
     const transcript = e.results[0][0].transcript;
@@ -378,11 +413,7 @@ els.micBtn.addEventListener("click", async () => {
     els.micHint.textContent = "didn't catch that, try again";
   };
 
-  recognition.onend = () => {
-    els.micBtn.classList.remove("listening");
-    els.player.classList.remove("listening");
-    els.micBtn.disabled = false;
-  };
+  recognition.onend = stopListeningUI;
 
   recognition.start();
 });
