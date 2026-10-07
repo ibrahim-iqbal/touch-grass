@@ -422,18 +422,44 @@ els.micBtn.addEventListener("click", async () => {
 let cameraStream = null;
 
 els.proofBtn.addEventListener("click", async () => {
+  if (els.proofBtn.disabled) return;
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     els.micHint.textContent = "camera isn't available on this device or browser";
     return;
   }
+  els.proofBtn.disabled = true;
+  els.micHint.textContent = "opening camera...";
   try {
-    cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+    // confirmed by hand: getUserMedia can hang indefinitely with no camera
+    // hardware present — same class of trap as the mic's silence timeout,
+    // same fix: a defensive timeout instead of trusting the browser to settle.
+    let timedOut = false;
+    const mediaPromise = navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+    // if the real call eventually resolves after we've already timed out and
+    // moved on, don't leave an orphaned stream running (camera light stuck on)
+    mediaPromise.then(stream => {
+      if (timedOut) stream.getTracks().forEach(t => t.stop());
+    }).catch(() => {});
+    cameraStream = await Promise.race([
+      mediaPromise,
+      new Promise((_, reject) => setTimeout(() => {
+        timedOut = true;
+        reject(new DOMException("timed out", "TimeoutError"));
+      }, 8000)),
+    ]);
     els.cameraFeed.srcObject = cameraStream;
     showModal(els.cameraModal, els.proofBtn);
+    els.micHint.textContent = "say it again anytime for a new dare";
   } catch (err) {
-    els.micHint.textContent = err.name === "NotAllowedError" || err.name === "PermissionDeniedError"
-      ? "camera permission denied — allow camera access to add proof"
-      : "couldn't access camera: " + err.message;
+    if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+      els.micHint.textContent = "camera permission denied — allow camera access to add proof";
+    } else if (err.name === "TimeoutError") {
+      els.micHint.textContent = "camera didn't respond, try again";
+    } else {
+      els.micHint.textContent = "couldn't access camera: " + err.message;
+    }
+  } finally {
+    els.proofBtn.disabled = false;
   }
 });
 
