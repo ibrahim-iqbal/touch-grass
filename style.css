@@ -804,6 +804,8 @@ body {
   padding: 20px;
   width: 100%;
   max-width: 380px;
+  max-height: 85vh;
+  overflow-y: auto;
   animation: modal-in 0.15s ease;
 }
 
@@ -868,6 +870,36 @@ body {
   color: var(--text-muted);
   margin: 0 0 16px;
   line-height: 1.5;
+}
+
+.settings-inner details {
+  border-bottom: 1px solid var(--window-bg-2);
+  padding: 8px 0;
+}
+
+.settings-inner details:last-of-type { border-bottom: none; }
+
+.settings-inner summary {
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.settings-inner summary::-webkit-details-marker { display: none; }
+
+.settings-inner summary::before {
+  content: "+ ";
+  color: var(--green);
+}
+
+.settings-inner details[open] summary::before { content: "– "; }
+
+.settings-inner details p {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 8px 0 0;
 }
 
 @keyframes bump {

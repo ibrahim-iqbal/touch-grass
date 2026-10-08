@@ -1,6 +1,6 @@
 {
-  "name": "touch grass",
-  "short_name": "touch grass",
+  "name": "Touch Grass",
+  "short_name": "Touch Grass",
   "description": "voice dares that get you outside, generated and run entirely in your browser",
   "start_url": ".",
   "display": "standalone",

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>touch grass</title>
+<title>Touch Grass — go outside</title>
 <meta name="description" content="voice dares that get you outside, generated and run entirely in your browser" />
 <meta name="author" content="ibrahim-iqbal" />
 <link rel="manifest" href="manifest.json" />
@@ -14,17 +14,17 @@
 
 <!-- og:image/twitter:image left relative since the final onrender.com name isn't settled yet; most crawlers resolve relative to the page, but swap for an absolute URL once the domain is final -->
 <meta property="og:type" content="website" />
-<meta property="og:title" content="touch grass" />
+<meta property="og:title" content="Touch Grass — go outside" />
 <meta property="og:description" content="voice dares that get you outside, generated and run entirely in your browser" />
 <meta property="og:image" content="icon-512.png" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="touch grass" />
+<meta name="twitter:title" content="Touch Grass — go outside" />
 <meta name="twitter:description" content="voice dares that get you outside, generated and run entirely in your browser" />
 <meta name="twitter:image" content="icon-512.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="style.css?v=4" />
+<link rel="stylesheet" href="style.css?v=5" />
 </head>
 <body>
 
@@ -81,6 +81,9 @@
         </div>
       </div>
       <div class="top-bar-actions">
+        <button id="help-btn" class="icon-btn" aria-label="help and faq" title="help / how this works">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </button>
         <button id="theme-btn" class="icon-btn" aria-label="toggle light and dark mode" title="toggle light / dark">
           <svg id="theme-icon-dark" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
           <svg id="theme-icon-light" class="hidden" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4" y1="12" x2="2" y2="12"/><line x1="22" y1="12" x2="20" y2="12"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/><line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/></svg>
@@ -132,6 +135,35 @@
   </main>
 </div>
 
+<div id="help-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="help-heading">
+  <div class="modal-inner settings-inner">
+    <h2 id="help-heading">how it works</h2>
+    <details open>
+      <summary>what do i do?</summary>
+      <p>tap the mic and say your time, energy, and where you are — e.g. "20 minutes, high energy, near the park". you'll get one dare to go do.</p>
+    </details>
+    <details>
+      <summary>how does a dare count?</summary>
+      <p>tap "prove it outside", snap a photo once you're actually out there. that's what counts it toward your dares, streak, and stats — just hearing the dare doesn't.</p>
+    </details>
+    <details>
+      <summary>what's the streak?</summary>
+      <p>one proof photo per day keeps it going. miss a day and it resets to zero, so the pips track a run of consecutive days, not total dares.</p>
+    </details>
+    <details>
+      <summary>no mic or camera — now what?</summary>
+      <p>no mic support falls back to a random dare automatically. no camera just means you can't submit proof on that device — everything else still works.</p>
+    </details>
+    <details>
+      <summary>is my data private?</summary>
+      <p>everything lives in your browser's local storage, nothing is sent anywhere unless you paste an api key in settings for nicer voice or AI-generated dares — those go straight from your browser to that provider, never through us.</p>
+    </details>
+    <div class="modal-actions">
+      <button id="help-close" class="btn btn-primary">got it</button>
+    </div>
+  </div>
+</div>
+
 <div id="camera-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="camera proof">
   <div class="modal-inner">
     <video id="camera-feed" autoplay playsinline></video>
@@ -156,6 +188,6 @@
   </div>
 </div>
 
-<script type="module" src="app.js?v=8"></script>
+<script type="module" src="app.js?v=9"></script>
 </body>
 </html>

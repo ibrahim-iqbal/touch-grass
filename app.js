@@ -44,6 +44,9 @@ const els = {
   statDares: document.getElementById("stat-dares"),
   statTime: document.getElementById("stat-time"),
   statBest: document.getElementById("stat-best"),
+  helpBtn: document.getElementById("help-btn"),
+  helpModal: document.getElementById("help-modal"),
+  helpClose: document.getElementById("help-close"),
   themeBtn: document.getElementById("theme-btn"),
   themeIconDark: document.getElementById("theme-icon-dark"),
   themeIconLight: document.getElementById("theme-icon-light"),
@@ -621,6 +624,10 @@ els.themeBtn.addEventListener("click", () => {
   try { localStorage.setItem(THEME_KEY, next); } catch {}
   applyThemeIcon();
 });
+
+// --- help / faq ---
+els.helpBtn.addEventListener("click", () => showModal(els.helpModal, els.helpBtn));
+els.helpClose.addEventListener("click", () => hideModal(els.helpModal));
 
 // --- settings ---
 els.settingsBtn.addEventListener("click", () => {
