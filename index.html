@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="style.css?v=2" />
+<link rel="stylesheet" href="style.css?v=3" />
 </head>
 <body>
 
@@ -89,7 +89,7 @@
 
     <section id="dare-card" class="quest-box hidden">
       <p class="quest-label">◆ quest ◆</p>
-      <p id="dare-text" class="dare-text"></p>
+      <p id="dare-text" class="dare-text" aria-live="polite" aria-atomic="true"></p>
       <div class="dare-tags">
         <span id="dare-time" class="tag"></span>
         <span id="dare-energy" class="tag"></span>
@@ -134,15 +134,15 @@
   <div class="modal-inner settings-inner">
     <h2 id="settings-heading">settings</h2>
     <label class="field-label" for="hf-token">hugging face token (optional)</label>
-    <input id="hf-token" class="field" type="password" placeholder="paste token to enable smart dare generation" />
+    <input id="hf-token" class="field" type="password" autocomplete="off" placeholder="paste token to enable smart dare generation" />
     <p class="field-hint">without a token, dares come from a curated offline list instead of the live model. nothing you type here leaves your browser.</p>
     <label class="field-label" for="elevenlabs-key">elevenlabs api key (optional)</label>
-    <input id="elevenlabs-key" class="field" type="password" placeholder="paste key for nicer voice" />
+    <input id="elevenlabs-key" class="field" type="password" autocomplete="off" placeholder="paste key for nicer voice" />
     <p class="field-hint">without a key, voice falls back to your browser's built-in speech engine.</p>
     <button id="settings-save" class="btn btn-primary">save</button>
   </div>
 </div>
 
-<script type="module" src="app.js?v=6"></script>
+<script type="module" src="app.js?v=7"></script>
 </body>
 </html>

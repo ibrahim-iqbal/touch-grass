@@ -234,7 +234,12 @@ function pickFromBank(bank, context) {
     (!context.time || d.time === context.time) &&
     (!context.energy || d.energy === context.energy)
   );
-  const pool = matches.length ? matches : bank;
+  let pool = matches.length ? matches : bank;
+  // avoid repeating the dare that's already on screen when another option exists
+  if (pool.length > 1 && currentDare) {
+    const withoutCurrent = pool.filter(d => d.text !== currentDare.text);
+    if (withoutCurrent.length) pool = withoutCurrent;
+  }
   return pool[Math.floor(Math.random() * pool.length)];
 }
 

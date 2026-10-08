@@ -1,17 +1,22 @@
-const CACHE = "touchgrass-v2";
+const CACHE = "touchgrass-v3";
 // ponytail: these must match the ?v= query strings in index.html exactly —
 // confirmed by hand that a mismatch here means offline mode silently serves
 // nothing for that file until one successful online load backfills the cache
 // under the real request URL. Bump both together when editing app.js/style.css.
-const SHELL = ["./", "index.html", "style.css?v=2", "app.js?v=6", "dares.json", "manifest.json", "icon.svg", "icon-180.png"];
+const SHELL = ["./", "index.html", "style.css?v=3", "app.js?v=7", "dares.json", "manifest.json", "icon.svg", "icon-180.png", "icon-192.png", "icon-512.png"];
 
 self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)));
+  // without skipWaiting, a new SW sits "waiting" until every open tab fully
+  // closes — confirmed by hand: that left a stale cached index.html (old
+  // asset ?v= urls) controlling the page straight through a reload.
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (e) => {
   e.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
 });
 

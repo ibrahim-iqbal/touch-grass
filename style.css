@@ -12,6 +12,7 @@
   --tree: #2e6b3e;
   --trunk: #5a3b24;
   --cloud: #ffffff;
+  --sun: #ffd34d;
   --ink: #1b2016;
   --window-bg: #1f2b1a;
   --window-bg-2: #26331f;
@@ -145,13 +146,34 @@ body {
 .sun-moon {
   position: absolute;
   top: 10%;
-  right: 14%;
+  left: 14%;
   width: 56px;
   height: 56px;
   border-radius: 50%;
   background: var(--sun);
   box-shadow: 0 0 0 6px color-mix(in srgb, var(--sun) 25%, transparent);
-  transition: background 0.4s ease, top 0.4s ease;
+  transition: background 0.8s ease, box-shadow 0.8s ease, left 0.8s ease, top 0.8s ease;
+}
+
+.sun-moon::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background-image:
+    radial-gradient(circle at 32% 30%, rgba(0, 0, 0, 0.16) 0 20%, transparent 21%),
+    radial-gradient(circle at 65% 55%, rgba(0, 0, 0, 0.13) 0 15%, transparent 16%),
+    radial-gradient(circle at 45% 72%, rgba(0, 0, 0, 0.11) 0 11%, transparent 12%);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+:root[data-theme="dark"] .sun-moon { left: 72%; top: 8%; }
+:root[data-theme="dark"] .sun-moon::after { opacity: 1; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .sun-moon { left: 72%; top: 8%; }
+  :root:not([data-theme="light"]) .sun-moon::after { opacity: 1; }
 }
 
 .clouds { position: absolute; inset: 0; }
