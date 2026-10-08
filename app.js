@@ -39,6 +39,7 @@ const els = {
   micBtn: document.getElementById("mic-btn"),
   micHint: document.getElementById("mic-hint"),
   proofBtn: document.getElementById("proof-btn"),
+  proofHint: document.getElementById("proof-hint"),
   proofThumb: document.getElementById("proof-thumb"),
   statDares: document.getElementById("stat-dares"),
   statTime: document.getElementById("stat-time"),
@@ -63,6 +64,7 @@ const els = {
   rankTitle: document.getElementById("rank-title"),
   xpFill: document.getElementById("xp-fill"),
   xpBar: document.getElementById("xp-bar"),
+  streakRow: document.getElementById("streak-row"),
   streakPips: document.getElementById("streak-pips"),
   badges: document.getElementById("badges"),
 };
@@ -151,6 +153,12 @@ function renderBadges(detectNew) {
 }
 
 function renderHud(detectNewBadges) {
+  // ponytail: nothing to show until there's a first dare, and an empty
+  // streak row + 4 greyed locked badges in front of a brand-new user was
+  // pure noise before they'd done anything — reveal once daresDone >= 1.
+  els.streakRow.classList.toggle("hidden", state.daresDone === 0);
+  els.badges.classList.toggle("hidden", state.daresDone === 0);
+
   const { level, xpInLevel, xpToNext, title } = computeLevel(state.daresDone);
   els.levelNum.textContent = level;
   els.rankTitle.textContent = title;
@@ -213,6 +221,7 @@ function renderDare(dare) {
   els.pitch.classList.add("hidden");
   els.dareCard.classList.remove("hidden");
   els.proofBtn.classList.remove("hidden");
+  els.proofHint.classList.remove("hidden");
 }
 
 // --- dare generation ---
