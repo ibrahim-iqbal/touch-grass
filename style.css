@@ -451,9 +451,10 @@ body {
   z-index: 1;
   width: 100%;
   max-width: 420px;
-  background: var(--window-bg);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--window-bg) 100%, white 6%) 0%, var(--window-bg) 40%, var(--window-bg-2) 100%);
   border: var(--pixel) solid var(--ink);
   box-shadow:
+    inset 0 2px 0 0 color-mix(in srgb, var(--window-bg) 100%, white 12%),
     0 0 0 var(--pixel) var(--paper),
     0 10px 0 0 var(--ink),
     0 14px 26px -10px rgba(0, 0, 0, 0.5);
@@ -476,8 +477,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--amber);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--amber) 100%, white 30%) 0%, var(--amber) 55%);
   border: 2px solid var(--ink);
+  box-shadow: inset 0 2px 0 0 color-mix(in srgb, var(--amber) 100%, white 45%);
 }
 
 .level-num {
@@ -609,9 +611,9 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--window-bg-2);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--window-bg-2) 100%, white 15%) 0%, var(--window-bg-2) 60%);
   border: 2px solid var(--ink);
-  box-shadow: 0 3px 0 0 var(--ink);
+  box-shadow: inset 0 2px 0 0 color-mix(in srgb, var(--window-bg-2) 100%, white 25%), 0 3px 0 0 var(--ink);
   width: 30px;
   height: 30px;
   color: var(--text-muted);
@@ -622,13 +624,14 @@ body {
 .icon-btn:hover { color: var(--text); }
 .icon-btn:active {
   transform: translateY(3px);
-  box-shadow: 0 0 0 0 var(--ink);
+  box-shadow: inset 0 2px 0 0 color-mix(in srgb, var(--window-bg-2) 100%, white 25%), 0 0 0 0 var(--ink);
 }
 
 .quest-box {
-  background: var(--paper);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--paper) 100%, white 20%) 0%, var(--paper) 50%, color-mix(in srgb, var(--paper) 100%, black 6%) 100%);
   color: var(--paper-text);
   border: 2px solid var(--ink);
+  box-shadow: inset 0 2px 0 0 color-mix(in srgb, var(--paper) 100%, white 35%);
   padding: 14px;
   margin-bottom: 18px;
   position: relative;
@@ -697,9 +700,9 @@ body {
   justify-content: center;
   width: 72px;
   height: 72px;
-  background: var(--green);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--green) 100%, white 25%) 0%, var(--green) 45%, var(--green) 100%);
   border: var(--pixel) solid var(--ink);
-  box-shadow: 0 6px 0 0 var(--green-dark), 0 6px 0 var(--pixel) var(--ink);
+  box-shadow: inset 0 3px 0 0 color-mix(in srgb, var(--green) 100%, white 40%), 0 6px 0 0 var(--green-dark), 0 6px 0 var(--pixel) var(--ink);
   color: var(--ink);
   cursor: pointer;
   transition: transform 0.08s ease, box-shadow 0.08s ease;
@@ -709,7 +712,7 @@ body {
 
 .mic-btn:active:not(:disabled) {
   transform: translateY(6px);
-  box-shadow: 0 0 0 0 var(--green-dark), 0 0 0 var(--pixel) var(--ink);
+  box-shadow: inset 0 3px 0 0 color-mix(in srgb, var(--green) 100%, white 40%), 0 0 0 0 var(--green-dark), 0 0 0 var(--pixel) var(--ink);
 }
 
 .mic-btn:disabled { opacity: 0.6; cursor: default; }
@@ -735,9 +738,9 @@ body {
   width: 100%;
   padding: 11px;
   margin-bottom: 18px;
-  background: var(--window-bg-2);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--window-bg-2) 100%, white 12%) 0%, var(--window-bg-2) 60%);
   border: 2px solid var(--ink);
-  box-shadow: 0 4px 0 0 var(--ink);
+  box-shadow: inset 0 2px 0 0 color-mix(in srgb, var(--window-bg-2) 100%, white 22%), 0 4px 0 0 var(--ink);
   color: var(--text);
   font-size: 12.5px;
   font-weight: 500;
@@ -748,9 +751,9 @@ body {
 .proof-btn:hover:not(:disabled) { color: var(--amber); }
 .proof-btn:active:not(:disabled) {
   transform: translateY(4px);
-  box-shadow: 0 0 0 0 var(--ink);
+  box-shadow: inset 0 2px 0 0 color-mix(in srgb, var(--window-bg-2) 100%, white 22%), 0 0 0 0 var(--ink);
 }
-.proof-btn:disabled { opacity: 0.5; cursor: default; box-shadow: 0 4px 0 0 var(--ink); }
+.proof-btn:disabled { opacity: 0.5; cursor: default; box-shadow: inset 0 2px 0 0 color-mix(in srgb, var(--window-bg-2) 100%, white 22%), 0 4px 0 0 var(--ink); }
 
 .proof-hint {
   font-size: 11.5px;
@@ -830,8 +833,8 @@ body {
   flex: 1;
   padding: 10px;
   border: 2px solid var(--ink);
-  box-shadow: 0 4px 0 0 var(--ink);
-  background: var(--window-bg-2);
+  box-shadow: inset 0 2px 0 0 color-mix(in srgb, var(--window-bg-2) 100%, white 22%), 0 4px 0 0 var(--ink);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--window-bg-2) 100%, white 12%) 0%, var(--window-bg-2) 60%);
   color: var(--text);
   cursor: pointer;
   font-size: 13px;
@@ -841,16 +844,16 @@ body {
 
 .btn:active {
   transform: translateY(4px);
-  box-shadow: 0 0 0 0 var(--ink);
+  box-shadow: inset 0 2px 0 0 color-mix(in srgb, var(--window-bg-2) 100%, white 22%), 0 0 0 0 var(--ink);
 }
 
 .btn-primary {
-  background: var(--green);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--green) 100%, white 25%) 0%, var(--green) 55%);
   color: var(--ink);
-  box-shadow: 0 4px 0 0 var(--green-dark), 0 4px 0 2px var(--ink);
+  box-shadow: inset 0 2px 0 0 color-mix(in srgb, var(--green) 100%, white 40%), 0 4px 0 0 var(--green-dark), 0 4px 0 2px var(--ink);
 }
 
-.btn-primary:active { box-shadow: 0 0 0 0 var(--green-dark), 0 0 0 2px var(--ink); }
+.btn-primary:active { box-shadow: inset 0 2px 0 0 color-mix(in srgb, var(--green) 100%, white 40%), 0 0 0 0 var(--green-dark), 0 0 0 2px var(--ink); }
 
 .settings-inner h2 {
   font-family: "Press Start 2P", monospace;
