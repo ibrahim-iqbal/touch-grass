@@ -709,6 +709,90 @@ body {
 
 .modal-actions { display: flex; gap: 10px; }
 
+/* --- menu: grid explode + panel swap, replaces the old separate help/settings modals --- */
+.menu-inner {
+  position: relative;
+  max-width: 340px;
+  padding-top: 30px;
+}
+
+.menu-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.menu-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 72px;
+  padding: 10px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--window-bg-2) 100%, white 15%) 0%, var(--window-bg-2) 60%);
+  border: 2px solid var(--ink);
+  box-shadow: inset 0 2px 0 0 color-mix(in srgb, var(--window-bg-2) 100%, white 25%), 0 3px 0 0 var(--ink);
+  color: var(--text);
+  font-family: "Press Start 2P", monospace;
+  font-size: 10px;
+  text-transform: lowercase;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  opacity: 0;
+  transform: scale(0.4);
+  animation: tile-pop-in 0.3s ease forwards;
+}
+
+.menu-tile:nth-child(1) { animation-delay: 0ms; }
+.menu-tile:nth-child(2) { animation-delay: 40ms; }
+.menu-tile:nth-child(3) { animation-delay: 80ms; }
+.menu-tile:nth-child(4) { animation-delay: 120ms; }
+.menu-tile:nth-child(5) { animation-delay: 160ms; }
+
+.menu-tile:hover { color: var(--amber); }
+.menu-tile:active {
+  transform: translateY(3px);
+  box-shadow: inset 0 2px 0 0 color-mix(in srgb, var(--window-bg-2) 100%, white 25%), 0 0 0 0 var(--ink);
+}
+
+@keyframes tile-pop-in {
+  from { opacity: 0; transform: scale(0.4); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.menu-panel h2 {
+  font-family: "Press Start 2P", monospace;
+  font-size: 13px;
+  margin: 0 0 16px;
+}
+
+.menu-panel {
+  animation: dare-in 0.2s ease;
+}
+
+.menu-back {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 0 14px;
+}
+
+.menu-back:hover { color: var(--amber); }
+
+#menu-panel-badges .badges { display: flex; gap: 6px; flex-wrap: wrap; margin: 0; }
+
 .btn {
   flex: 1;
   padding: 10px;
@@ -835,5 +919,13 @@ body {
   }
   .sun-moon, .sky, .backdrop-img, .xp-fill, .badge, .quest-box {
     transition-duration: 0.01ms;
+  }
+  .menu-tile {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .menu-panel {
+    animation: none;
   }
 }

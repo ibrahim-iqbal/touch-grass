@@ -44,15 +44,14 @@ const els = {
   statDares: document.getElementById("stat-dares"),
   statTime: document.getElementById("stat-time"),
   statBest: document.getElementById("stat-best"),
-  helpBtn: document.getElementById("help-btn"),
-  helpModal: document.getElementById("help-modal"),
-  helpClose: document.getElementById("help-close"),
-  themeBtn: document.getElementById("theme-btn"),
   themeIconDark: document.getElementById("theme-icon-dark"),
   themeIconLight: document.getElementById("theme-icon-light"),
-  settingsBtn: document.getElementById("settings-btn"),
-  settingsModal: document.getElementById("settings-modal"),
   settingsSave: document.getElementById("settings-save"),
+  menuBtn: document.getElementById("menu-btn"),
+  menuModal: document.getElementById("menu-modal"),
+  menuGrid: document.getElementById("menu-grid"),
+  menuClose: document.getElementById("menu-close"),
+  menuThemeTile: document.getElementById("menu-theme-tile"),
   hfToken: document.getElementById("hf-token"),
   elevenKey: document.getElementById("elevenlabs-key"),
   cameraModal: document.getElementById("camera-modal"),
@@ -157,10 +156,10 @@ function renderBadges(detectNew) {
 
 function renderHud(detectNewBadges) {
   // ponytail: nothing to show until there's a first dare, and an empty
-  // streak row + 4 greyed locked badges in front of a brand-new user was
-  // pure noise before they'd done anything — reveal once daresDone >= 1.
+  // streak row in front of a brand-new user was pure noise before they'd
+  // done anything — reveal once daresDone >= 1. Badges now live inside the
+  // menu (not the main view), so locked/greyed is fine to show from the start.
   els.streakRow.classList.toggle("hidden", state.daresDone === 0);
-  els.badges.classList.toggle("hidden", state.daresDone === 0);
 
   const { level, xpInLevel, xpToNext, title } = computeLevel(state.daresDone);
   els.levelNum.textContent = level;
@@ -566,7 +565,8 @@ function trapModalKeydown(e) {
   if (!modal) return;
   if (e.key === "Escape") {
     e.preventDefault();
-    hideModal(modal);
+    if (modal === els.menuModal) closeMenuFully();
+    else hideModal(modal);
     return;
   }
   if (e.key !== "Tab") return;
@@ -625,33 +625,94 @@ function applyThemeIcon() {
   applyThemeIcon();
 })();
 
-els.themeBtn.addEventListener("click", () => {
+els.menuThemeTile.addEventListener("click", () => {
   const next = effectiveTheme() === "dark" ? "light" : "dark";
   document.documentElement.setAttribute("data-theme", next);
   try { localStorage.setItem(THEME_KEY, next); } catch {}
   applyThemeIcon();
 });
 
-// --- help / faq ---
-els.helpBtn.addEventListener("click", () => showModal(els.helpModal, els.helpBtn));
-els.helpClose.addEventListener("click", () => hideModal(els.helpModal));
+// --- menu: RPG-style explode grid + panels, wired to browser history so
+// hardware/gesture back steps one level instead of leaving the whole PWA.
+// depth 0 = closed, 1 = grid, 2 = a panel (stats/badges/settings/help).
+const MENU_PANELS = ["stats", "badges", "settings", "help"];
+let menuDepth = 0;
 
-// --- settings ---
-els.settingsBtn.addEventListener("click", () => {
-  const secrets = loadSecrets();
-  els.hfToken.value = secrets.hfToken || "";
-  els.elevenKey.value = secrets.elevenKey || "";
-  showModal(els.settingsModal, els.settingsBtn);
+function showMenuPanel(name) {
+  els.menuGrid.classList.toggle("hidden", !!name);
+  for (const p of MENU_PANELS) {
+    document.getElementById(`menu-panel-${p}`).classList.toggle("hidden", p !== name);
+  }
+}
+
+// applies UI to match a given history depth without touching history itself —
+// used by the popstate listener so back/forward never double-push.
+function renderMenuDepth(depth, panel) {
+  menuDepth = depth;
+  if (depth === 0) {
+    els.menuModal.classList.add("hidden");
+    els.menuBtn.setAttribute("aria-expanded", "false");
+    document.removeEventListener("keydown", trapModalKeydown);
+    if (modalTrigger) { modalTrigger.focus(); modalTrigger = null; }
+    return;
+  }
+  els.menuModal.classList.remove("hidden");
+  els.menuBtn.setAttribute("aria-expanded", "true");
+  document.addEventListener("keydown", trapModalKeydown);
+  showMenuPanel(depth === 2 ? panel : null);
+  const focusTarget = depth === 2
+    ? document.querySelector(`#menu-panel-${panel} .menu-back`)
+    : els.menuGrid.querySelector(".menu-tile");
+  focusTarget?.focus();
+}
+
+window.addEventListener("popstate", (e) => {
+  const tgMenu = e.state?.tgMenu;
+  if (!tgMenu) renderMenuDepth(0);
+  else if (tgMenu === "grid") renderMenuDepth(1);
+  else renderMenuDepth(2, tgMenu);
 });
+
+els.menuBtn.addEventListener("click", () => {
+  modalTrigger = els.menuBtn;
+  history.pushState({ tgMenu: "grid" }, "");
+  renderMenuDepth(1);
+});
+
+els.menuGrid.querySelectorAll(".menu-tile[data-panel]").forEach(tile => {
+  tile.addEventListener("click", () => {
+    const panel = tile.dataset.panel;
+    if (panel === "settings") {
+      const secrets = loadSecrets();
+      els.hfToken.value = secrets.hfToken || "";
+      els.elevenKey.value = secrets.elevenKey || "";
+    }
+    history.pushState({ tgMenu: panel }, "");
+    renderMenuDepth(2, panel);
+  });
+});
+
+document.querySelectorAll(".menu-back").forEach(btn => {
+  btn.addEventListener("click", () => history.back());
+});
+
+function closeMenuFully() {
+  if (menuDepth > 0) history.go(-menuDepth);
+  else renderMenuDepth(0);
+}
+
+els.menuClose.addEventListener("click", closeMenuFully);
 
 els.settingsSave.addEventListener("click", () => {
   saveSecrets({ hfToken: els.hfToken.value.trim(), elevenKey: els.elevenKey.value.trim() });
-  hideModal(els.settingsModal);
+  history.back();
 });
 
 document.querySelectorAll(".modal").forEach(modal => {
   modal.addEventListener("click", (e) => {
-    if (e.target === modal) hideModal(modal);
+    if (e.target !== modal) return;
+    if (modal === els.menuModal) closeMenuFully();
+    else hideModal(modal);
   });
 });
 
