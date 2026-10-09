@@ -277,7 +277,14 @@ async function generateDare(context) {
 async function generateDareWithModel(context, token) {
   // lazy-loaded so the 300mb+ model never touches a visitor who hasn't
   // opted in with a token in settings.
-  const { pipeline } = await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@3/dist/transformers.min.js");
+  const { pipeline, env } = await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@3/dist/transformers.min.js");
+  // confirmed by hand: the default threaded WASM backend needs
+  // SharedArrayBuffer, which needs the page to be cross-origin isolated
+  // (COOP/COEP) — not guaranteed on every static host, and when it's
+  // missing onnxruntime-web doesn't fall back cleanly, it throws a bare
+  // numeric code with no message. Forcing single-threaded WASM sidesteps
+  // that requirement entirely so this works on any plain static host.
+  env.backends.onnx.wasm.numThreads = 1;
   const generator = await pipeline("text-generation", "onnx-community/gemma-3-270m-it-ONNX", {
     dtype: "q4",
     token,
