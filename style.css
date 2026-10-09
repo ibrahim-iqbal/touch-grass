@@ -611,15 +611,19 @@ body {
   justify-content: center;
   background: var(--window-bg-2);
   border: 2px solid var(--ink);
+  box-shadow: 0 3px 0 0 var(--ink);
   width: 30px;
   height: 30px;
   color: var(--text-muted);
   cursor: pointer;
-  transition: transform 0.08s ease;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
 .icon-btn:hover { color: var(--text); }
-.icon-btn:active { transform: translateY(2px); }
+.icon-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 0 var(--ink);
+}
 
 .quest-box {
   background: var(--paper);
@@ -733,16 +737,20 @@ body {
   margin-bottom: 18px;
   background: var(--window-bg-2);
   border: 2px solid var(--ink);
+  box-shadow: 0 4px 0 0 var(--ink);
   color: var(--text);
   font-size: 12.5px;
   font-weight: 500;
   cursor: pointer;
-  transition: transform 0.08s ease;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
 .proof-btn:hover:not(:disabled) { color: var(--amber); }
-.proof-btn:active:not(:disabled) { transform: translateY(2px); }
-.proof-btn:disabled { opacity: 0.5; cursor: default; }
+.proof-btn:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 0 var(--ink);
+}
+.proof-btn:disabled { opacity: 0.5; cursor: default; box-shadow: 0 4px 0 0 var(--ink); }
 
 .proof-hint {
   font-size: 11.5px;
@@ -822,20 +830,27 @@ body {
   flex: 1;
   padding: 10px;
   border: 2px solid var(--ink);
+  box-shadow: 0 4px 0 0 var(--ink);
   background: var(--window-bg-2);
   color: var(--text);
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
-  transition: transform 0.08s ease;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
-.btn:active { transform: translateY(2px); }
+.btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 0 var(--ink);
+}
 
 .btn-primary {
   background: var(--green);
   color: var(--ink);
+  box-shadow: 0 4px 0 0 var(--green-dark), 0 4px 0 2px var(--ink);
 }
+
+.btn-primary:active { box-shadow: 0 0 0 0 var(--green-dark), 0 0 0 2px var(--ink); }
 
 .settings-inner h2 {
   font-family: "Press Start 2P", monospace;
