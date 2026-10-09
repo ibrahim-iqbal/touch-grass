@@ -1,9 +1,9 @@
-const CACHE = "touchgrass-v9";
+const CACHE = "touchgrass-v10";
 // ponytail: these must match the ?v= query strings in index.html exactly —
 // confirmed by hand that a mismatch here means offline mode silently serves
 // nothing for that file until one successful online load backfills the cache
 // under the real request URL. Bump both together when editing app.js/style.css.
-const SHELL = ["./", "index.html", "style.css?v=8", "app.js?v=10", "dares.json", "manifest.json", "icon.svg", "icon-180.png", "icon-192.png", "icon-512.png", "assets/backdrop-day.jpg", "assets/backdrop-night.jpg"];
+const SHELL = ["./", "index.html", "style.css?v=9", "app.js?v=10", "dares.json", "manifest.json", "icon.svg", "icon-180.png", "icon-192.png", "icon-512.png", "assets/backdrop-day.jpg", "assets/backdrop-night.jpg"];
 
 self.addEventListener("install", (e) => {
   // without skipWaiting, a new SW sits "waiting" until every open tab fully
