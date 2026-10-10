@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="style.css?v=9" />
+<link rel="stylesheet" href="style.css?v=15" />
 </head>
 <body>
 
@@ -57,41 +57,50 @@
     </div>
   </div>
 
-  <main class="game-window">
+  <!-- HUD: pinned to screen edges, scene stays the open stage in the middle -->
+  <header class="hud hud-top-left">
+    <div class="level-badge">
+      <span id="level-num" class="level-num">1</span>
+    </div>
+    <div class="level-info">
+      <p id="rank-title" class="rank-title">newcomer</p>
+      <div class="xp-bar" role="progressbar" aria-label="experience to next level" aria-valuemin="0" aria-valuemax="100" id="xp-bar">
+        <div id="xp-fill" class="xp-fill"></div>
+      </div>
+    </div>
+  </header>
 
-    <header class="top-bar">
-      <div class="level-badge">
-        <span id="level-num" class="level-num">1</span>
-      </div>
-      <div class="level-info">
-        <p id="rank-title" class="rank-title">newcomer</p>
-        <div class="xp-bar" role="progressbar" aria-label="experience to next level" aria-valuemin="0" aria-valuemax="100" id="xp-bar">
-          <div id="xp-fill" class="xp-fill"></div>
-        </div>
-      </div>
-      <div class="top-bar-actions">
-        <button id="help-btn" class="icon-btn" aria-label="help and faq" title="help / how this works">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        </button>
-        <button id="theme-btn" class="icon-btn" aria-label="toggle light and dark mode" title="toggle light / dark">
-          <svg id="theme-icon-dark" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-          <svg id="theme-icon-light" class="hidden" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4" y1="12" x2="2" y2="12"/><line x1="22" y1="12" x2="20" y2="12"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/><line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/></svg>
-        </button>
-        <button id="settings-btn" class="icon-btn" aria-label="settings" title="settings: optional ai voice/model keys">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        </button>
-      </div>
-    </header>
-
+  <div class="hud hud-top-right">
+    <div class="top-bar-actions">
+      <button id="help-btn" class="icon-btn" aria-label="help and faq" title="help / how this works">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </button>
+      <button id="theme-btn" class="icon-btn" aria-label="toggle light and dark mode" title="toggle light / dark">
+        <svg id="theme-icon-dark" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg id="theme-icon-light" class="hidden" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4" y1="12" x2="2" y2="12"/><line x1="22" y1="12" x2="20" y2="12"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/><line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/></svg>
+      </button>
+      <button id="settings-btn" class="icon-btn" aria-label="settings" title="settings: optional ai voice/model keys">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
     <div id="streak-row" class="streak-row hidden">
       <span class="streak-label">streak</span>
       <div id="streak-pips" class="streak-pips"></div>
       <span id="streak-count" class="streak-count">0</span>
     </div>
+  </div>
 
-    <div id="badges" class="badges hidden"></div>
+  <div id="badges" class="hud hud-badges badges hidden"></div>
 
-    <section id="dare-card" class="quest-box hidden">
+  <section class="hud hud-stats">
+    <div class="stat"><p id="stat-dares" class="stat-num">0</p><p class="stat-label">dares</p></div>
+    <div class="stat"><p id="stat-time" class="stat-num">0m</p><p class="stat-label">outside</p></div>
+    <div class="stat"><p id="stat-best" class="stat-num">0</p><p class="stat-label">best</p></div>
+  </section>
+
+  <!-- bottom dock: the dare ribbon slides up above the always-present mic action button -->
+  <div class="hud-dock">
+    <section id="dare-card" class="quest-ribbon hidden">
       <p class="quest-label">◆ quest ◆</p>
       <p id="dare-text" class="dare-text" aria-live="polite" aria-atomic="true"></p>
       <div class="dare-tags">
@@ -100,6 +109,13 @@
       </div>
     </section>
 
+    <img id="proof-thumb" class="proof-thumb hidden" alt="your outdoor proof photo" />
+    <p id="proof-hint" class="proof-hint hidden">snap a photo outside to count it toward your streak</p>
+    <button id="proof-btn" class="proof-btn hidden" title="snap a photo outside to count this dare">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      prove it outside
+    </button>
+
     <section class="mic-section">
       <p id="pitch" class="pitch">tap, say what you've got, get a reason to go outside</p>
       <button id="mic-btn" class="mic-btn" aria-label="speak to get a dare" title="tap to speak">
@@ -107,25 +123,11 @@
       </button>
       <p id="mic-hint" class="mic-hint" aria-live="polite" aria-atomic="true">try: "20 minutes, high energy, near the park"</p>
     </section>
-
-    <button id="proof-btn" class="proof-btn hidden" title="snap a photo outside to count this dare">
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-      prove it outside
-    </button>
-    <p id="proof-hint" class="proof-hint hidden">snap a photo outside to count it toward your streak</p>
-    <img id="proof-thumb" class="proof-thumb hidden" alt="your outdoor proof photo" />
-
-    <section class="stats-row">
-      <div class="stat"><p id="stat-dares" class="stat-num">0</p><p class="stat-label">dares</p></div>
-      <div class="stat"><p id="stat-time" class="stat-num">0m</p><p class="stat-label">outside</p></div>
-      <div class="stat"><p id="stat-best" class="stat-num">0</p><p class="stat-label">best</p></div>
-    </section>
-
-  </main>
+  </div>
 </div>
 
-<div id="help-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="help-heading">
-  <div class="modal-inner settings-inner">
+<div id="help-modal" class="modal drawer-modal hidden" role="dialog" aria-modal="true" aria-labelledby="help-heading">
+  <div class="modal-inner settings-inner drawer-inner">
     <h2 id="help-heading">how it works</h2>
     <details open>
       <summary>what do i do?</summary>
@@ -164,8 +166,8 @@
   </div>
 </div>
 
-<div id="settings-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settings-heading">
-  <div class="modal-inner settings-inner">
+<div id="settings-modal" class="modal drawer-modal hidden" role="dialog" aria-modal="true" aria-labelledby="settings-heading">
+  <div class="modal-inner settings-inner drawer-inner">
     <h2 id="settings-heading">settings</h2>
     <label class="field-label" for="hf-token">hugging face token (optional)</label>
     <input id="hf-token" class="field" type="password" autocomplete="off" placeholder="paste token to enable smart dare generation" />

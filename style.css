@@ -58,14 +58,11 @@ body {
   font-family: "Press Start 2P", monospace;
 }
 
-/* --- outdoor scene: a persistent little world behind the game window --- */
+/* --- the scene is the stage: HUD pieces float on top, pinned to the edges,
+   nothing sits centered over it anymore (see .hud / .hud-dock below) --- */
 .page {
   position: relative;
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 16px;
   overflow: hidden;
 }
 
@@ -237,15 +234,34 @@ body {
 .flower-4 { right: 15%; background: #fff2a8; }
 .flower-5 { left: 48%; background: #f2c2e0; bottom: 8.3%; }
 
-/* --- the player, standing in their own world --- */
+/* --- the player, standing on the foreground grass off to the left, clear of
+   the centered bottom dock. scaled up so he reads as a character, grounded on
+   the ground plane (not floating in the sky). `scale` is its own property so it
+   composes with the translateY() the idle/listen/cheer animations set. --- */
 .player {
   position: absolute;
-  bottom: 9%;
-  left: 44%;
+  bottom: 13%;
+  left: 17%;
   width: 20px;
   height: 30px;
+  scale: 1.7;
   animation: player-idle 2.4s ease-in-out infinite;
   transform-origin: bottom center;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.45));
+}
+
+/* a little ground shadow so he reads as standing ON the grass, not pasted on */
+.player::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -3px;
+  width: 22px;
+  height: 5px;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 50%;
+  filter: blur(1px);
 }
 
 .player-head {
@@ -325,29 +341,51 @@ body {
   100% { opacity: 0; transform: translateY(-44px) scale(1); }
 }
 
-/* --- the game window: a dialogue/HUD box floating over the world --- */
-.game-window {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 420px;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--window-bg) 100%, white 6%) 0%, var(--window-bg) 40%, var(--window-bg-2) 100%);
-  border: var(--pixel) solid var(--ink);
-  box-shadow:
-    inset 0 2px 0 0 color-mix(in srgb, var(--window-bg) 100%, white 12%),
-    0 0 0 var(--pixel) var(--paper),
-    0 10px 0 0 var(--ink),
-    0 14px 26px -10px rgba(0, 0, 0, 0.5);
-  padding: 18px 16px 20px;
+/* --- HUD: small chips pinned to the screen edges, like a game overlay —
+   the scene (painted backdrop + player) stays the open stage in the middle,
+   nothing floats centered over it anymore. --- */
+.hud {
+  position: fixed;
+  z-index: 2;
 }
 
-.top-bar {
+.hud-top-left {
+  top: 12px;
+  left: 12px;
   display: flex;
   align-items: center;
+  gap: 8px;
+  max-width: 170px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--window-bg) 100%, white 6%) 0%, var(--window-bg) 100%);
+  border: 2px solid var(--ink);
+  box-shadow: 0 3px 0 0 var(--ink), 0 0 0 2px var(--paper);
+  padding: 6px 10px 6px 6px;
+}
+
+.hud-top-right {
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.hud-stats {
+  top: 66px;
+  left: 12px;
+  display: flex;
   gap: 10px;
-  margin-bottom: 12px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--window-bg-2);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--window-bg) 100%, white 6%) 0%, var(--window-bg) 100%);
+  border: 2px solid var(--ink);
+  box-shadow: 0 3px 0 0 var(--ink), 0 0 0 2px var(--paper);
+  padding: 6px 10px;
+}
+
+.hud-badges {
+  top: 110px;
+  left: 12px;
+  max-width: 170px;
 }
 
 .level-badge {
@@ -371,16 +409,20 @@ body {
 .level-info { flex: 1; min-width: 0; }
 
 .rank-title {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--text);
   margin: 0 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .xp-bar {
-  height: 8px;
+  height: 7px;
+  width: 100%;
   background: var(--window-bg-2);
   border: 2px solid var(--ink);
   overflow: hidden;
@@ -404,8 +446,11 @@ body {
 .streak-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 14px;
+  gap: 6px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--window-bg) 100%, white 6%) 0%, var(--window-bg) 100%);
+  border: 2px solid var(--ink);
+  box-shadow: 0 3px 0 0 var(--ink), 0 0 0 2px var(--paper);
+  padding: 6px 8px;
 }
 
 .streak-label {
@@ -451,14 +496,13 @@ body {
 
 .badges {
   display: flex;
-  gap: 6px;
-  margin-bottom: 16px;
+  gap: 5px;
   flex-wrap: wrap;
 }
 
 .badge {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -507,26 +551,36 @@ body {
   box-shadow: inset 0 2px 0 0 color-mix(in srgb, var(--window-bg-2) 100%, white 25%), 0 0 0 0 var(--ink);
 }
 
-.quest-box {
+/* --- bottom dock: the dare ribbon slides up above the always-present mic --- */
+.hud-dock {
+  position: fixed;
+  z-index: 2;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 420px;
+  padding: 0 16px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.quest-ribbon {
+  width: 100%;
   background: linear-gradient(180deg, color-mix(in srgb, var(--paper) 100%, white 20%) 0%, var(--paper) 50%, color-mix(in srgb, var(--paper) 100%, black 6%) 100%);
   color: var(--paper-text);
   border: 2px solid var(--ink);
-  box-shadow: inset 0 2px 0 0 color-mix(in srgb, var(--paper) 100%, white 35%);
+  box-shadow: inset 0 2px 0 0 color-mix(in srgb, var(--paper) 100%, white 35%), 0 -6px 16px -8px rgba(0, 0, 0, 0.5);
   padding: 14px;
-  margin-bottom: 18px;
+  margin-bottom: 10px;
   position: relative;
-  animation: dare-in 0.25s ease;
+  animation: ribbon-up 0.3s ease;
 }
 
-.quest-box::after {
-  content: "";
-  position: absolute;
-  bottom: -8px;
-  left: 20px;
-  width: 0; height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 8px solid var(--ink);
+@keyframes ribbon-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .quest-label {
@@ -561,7 +615,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 24px 0;
 }
 
 .pitch {
@@ -617,7 +670,7 @@ body {
   gap: 8px;
   width: 100%;
   padding: 11px;
-  margin-bottom: 18px;
+  margin-bottom: 10px;
   background: linear-gradient(180deg, color-mix(in srgb, var(--window-bg-2) 100%, white 12%) 0%, var(--window-bg-2) 60%);
   border: 2px solid var(--ink);
   box-shadow: inset 0 2px 0 0 color-mix(in srgb, var(--window-bg-2) 100%, white 22%), 0 4px 0 0 var(--ink);
@@ -639,41 +692,34 @@ body {
   font-size: 11.5px;
   color: var(--text-muted);
   text-align: center;
-  margin: -10px 0 18px;
+  margin: -4px 0 10px;
   line-height: 1.4;
 }
 
 .proof-thumb {
   width: 100%;
-  margin: -4px 0 18px;
+  margin: -4px 0 10px;
   display: block;
   border: 2px solid var(--ink);
   animation: dare-in 0.3s ease;
 }
 
-.stats-row {
-  display: flex;
-  justify-content: space-between;
-  border-top: 2px solid var(--window-bg-2);
-  padding-top: 14px;
-}
-
 .stat { text-align: center; }
 .stat-num {
   font-family: "Press Start 2P", monospace;
-  font-size: 17px;
+  font-size: 13px;
   color: var(--amber);
   margin: 0;
   display: inline-block;
 }
 .stat-num.bump { animation: bump 0.4s ease; }
 .stat-label {
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 600;
   color: var(--text-muted);
-  margin: 8px 0 0;
+  margin: 3px 0 0;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
 }
 
 .modal {
@@ -698,6 +744,28 @@ body {
   max-height: 85vh;
   overflow-y: auto;
   animation: modal-in 0.15s ease;
+}
+
+/* --- settings/help slide in from the side instead of popping up centered —
+   keeps the "nothing covers the middle" rule even for secondary screens --- */
+.drawer-modal {
+  justify-content: flex-end;
+  padding: 0;
+  background: rgba(10, 12, 8, 0.5);
+}
+
+.drawer-inner {
+  max-width: 320px;
+  height: 100%;
+  max-height: 100%;
+  border-width: var(--pixel) 0 0 var(--pixel);
+  border-radius: 0;
+  animation: drawer-in 0.22s ease;
+}
+
+@keyframes drawer-in {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 #camera-feed, #camera-canvas {
@@ -822,8 +890,15 @@ body {
 }
 
 @media (max-width: 480px) {
-  .page { padding: 20px 14px; }
   .sun-moon { width: 40px; height: 40px; }
+  .hud-top-left, .hud-stats, .hud-badges { max-width: 130px; }
+  /* on a narrow screen the bottom dock goes full-width and the dare ribbon +
+     proof button stack tall enough to clip the player. when a dare is up he's
+     "gone outside to do it" — fade him out so nothing gets half-covered. he's
+     back standing on the grass once the dare clears. desktop keeps him since
+     the dock there is narrow and centered, player stands clear to the left. */
+  .player { transition: opacity 0.35s ease; }
+  .page:has(#dare-card:not(.hidden)) .player { opacity: 0; }
 }
 
 /* --- respect reduced-motion: kill decorative infinite loops, keep essential feedback snappy --- */
@@ -833,7 +908,10 @@ body {
   .mic-btn.listening {
     animation: none;
   }
-  .sun-moon, .sky, .backdrop-img, .xp-fill, .badge, .quest-box {
+  .sun-moon, .sky, .backdrop-img, .xp-fill, .badge {
     transition-duration: 0.01ms;
+  }
+  .quest-ribbon, .drawer-inner, .proof-thumb {
+    animation: none;
   }
 }
