@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="style.css?v=10" />
+<link rel="stylesheet" href="style.css?v=9" />
 </head>
 <body>
 
@@ -70,8 +70,15 @@
         </div>
       </div>
       <div class="top-bar-actions">
-        <button id="menu-btn" class="icon-btn" aria-label="menu" aria-haspopup="true" aria-expanded="false" title="menu">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        <button id="help-btn" class="icon-btn" aria-label="help and faq" title="help / how this works">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </button>
+        <button id="theme-btn" class="icon-btn" aria-label="toggle light and dark mode" title="toggle light / dark">
+          <svg id="theme-icon-dark" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          <svg id="theme-icon-light" class="hidden" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4" y1="12" x2="2" y2="12"/><line x1="22" y1="12" x2="20" y2="12"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/><line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/></svg>
+        </button>
+        <button id="settings-btn" class="icon-btn" aria-label="settings" title="settings: optional ai voice/model keys">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </button>
       </div>
     </header>
@@ -81,6 +88,8 @@
       <div id="streak-pips" class="streak-pips"></div>
       <span id="streak-count" class="streak-count">0</span>
     </div>
+
+    <div id="badges" class="badges hidden"></div>
 
     <section id="dare-card" class="quest-box hidden">
       <p class="quest-label">◆ quest ◆</p>
@@ -106,7 +115,42 @@
     <p id="proof-hint" class="proof-hint hidden">snap a photo outside to count it toward your streak</p>
     <img id="proof-thumb" class="proof-thumb hidden" alt="your outdoor proof photo" />
 
+    <section class="stats-row">
+      <div class="stat"><p id="stat-dares" class="stat-num">0</p><p class="stat-label">dares</p></div>
+      <div class="stat"><p id="stat-time" class="stat-num">0m</p><p class="stat-label">outside</p></div>
+      <div class="stat"><p id="stat-best" class="stat-num">0</p><p class="stat-label">best</p></div>
+    </section>
+
   </main>
+</div>
+
+<div id="help-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="help-heading">
+  <div class="modal-inner settings-inner">
+    <h2 id="help-heading">how it works</h2>
+    <details open>
+      <summary>what do i do?</summary>
+      <p>tap the mic and say your time, energy, and where you are — e.g. "20 minutes, high energy, near the park". you'll get one dare to go do.</p>
+    </details>
+    <details>
+      <summary>how does a dare count?</summary>
+      <p>tap "prove it outside", snap a photo once you're actually out there. that's what counts it toward your dares, streak, and stats — just hearing the dare doesn't.</p>
+    </details>
+    <details>
+      <summary>what's the streak?</summary>
+      <p>one proof photo per day keeps it going. miss a day and it resets to zero, so the pips track a run of consecutive days, not total dares.</p>
+    </details>
+    <details>
+      <summary>no mic or camera — now what?</summary>
+      <p>no mic support falls back to a random dare automatically. no camera just means you can't submit proof on that device — everything else still works.</p>
+    </details>
+    <details>
+      <summary>is my data private?</summary>
+      <p>everything lives in your browser's local storage, nothing is sent anywhere unless you paste an api key in settings for nicer voice or AI-generated dares — those go straight from your browser to that provider, never through us.</p>
+    </details>
+    <div class="modal-actions">
+      <button id="help-close" class="btn btn-primary">got it</button>
+    </div>
+  </div>
 </div>
 
 <div id="camera-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="camera proof">
@@ -120,91 +164,19 @@
   </div>
 </div>
 
-<div id="menu-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="menu">
-  <div class="modal-inner menu-inner">
-    <button id="menu-close" class="icon-btn menu-close-btn" aria-label="close menu">
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-
-    <div id="menu-grid" class="menu-grid" role="menu">
-      <button class="menu-tile" data-panel="stats" role="menuitem" aria-label="open stats">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        <span>stats</span>
-      </button>
-      <button class="menu-tile" data-panel="badges" role="menuitem" aria-label="open badges">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c0-6 4-10 8-11-1 6-4 10-8 11z"/><path d="M12 22c0-6-4-10-8-11 1 6 4 10 8 11z"/></svg>
-        <span>badges</span>
-      </button>
-      <button class="menu-tile" data-panel="settings" role="menuitem" aria-label="open settings">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        <span>settings</span>
-      </button>
-      <button class="menu-tile" data-panel="help" role="menuitem" aria-label="open help">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        <span>help</span>
-      </button>
-      <button id="menu-theme-tile" class="menu-tile" role="menuitem" aria-label="toggle light and dark mode">
-        <svg id="theme-icon-dark" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-        <svg id="theme-icon-light" class="hidden" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4" y1="12" x2="2" y2="12"/><line x1="22" y1="12" x2="20" y2="12"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/><line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/></svg>
-        <span>theme</span>
-      </button>
-    </div>
-
-    <div id="menu-panel-stats" class="menu-panel hidden">
-      <button class="menu-back" aria-label="back to menu">‹ back</button>
-      <h2>stats</h2>
-      <section class="stats-row">
-        <div class="stat"><p id="stat-dares" class="stat-num">0</p><p class="stat-label">dares</p></div>
-        <div class="stat"><p id="stat-time" class="stat-num">0m</p><p class="stat-label">outside</p></div>
-        <div class="stat"><p id="stat-best" class="stat-num">0</p><p class="stat-label">best</p></div>
-      </section>
-    </div>
-
-    <div id="menu-panel-badges" class="menu-panel hidden">
-      <button class="menu-back" aria-label="back to menu">‹ back</button>
-      <h2>badges</h2>
-      <div id="badges" class="badges"></div>
-    </div>
-
-    <div id="menu-panel-settings" class="menu-panel hidden">
-      <button class="menu-back" aria-label="back to menu">‹ back</button>
-      <h2 id="settings-heading">settings</h2>
-      <label class="field-label" for="hf-token">hugging face token (optional)</label>
-      <input id="hf-token" class="field" type="password" autocomplete="off" placeholder="paste token to enable smart dare generation" />
-      <p class="field-hint">without a token, dares come from a curated offline list instead of the live model. nothing you type here leaves your browser.</p>
-      <label class="field-label" for="elevenlabs-key">elevenlabs api key (optional)</label>
-      <input id="elevenlabs-key" class="field" type="password" autocomplete="off" placeholder="paste key for nicer voice" />
-      <p class="field-hint">without a key, voice falls back to your browser's built-in speech engine.</p>
-      <button id="settings-save" class="btn btn-primary">save</button>
-    </div>
-
-    <div id="menu-panel-help" class="menu-panel hidden">
-      <button class="menu-back" aria-label="back to menu">‹ back</button>
-      <h2 id="help-heading">how it works</h2>
-      <details open>
-        <summary>what do i do?</summary>
-        <p>tap the mic and say your time, energy, and where you are — e.g. "20 minutes, high energy, near the park". you'll get one dare to go do.</p>
-      </details>
-      <details>
-        <summary>how does a dare count?</summary>
-        <p>tap "prove it outside", snap a photo once you're actually out there. that's what counts it toward your dares, streak, and stats — just hearing the dare doesn't.</p>
-      </details>
-      <details>
-        <summary>what's the streak?</summary>
-        <p>one proof photo per day keeps it going. miss a day and it resets to zero, so the pips track a run of consecutive days, not total dares.</p>
-      </details>
-      <details>
-        <summary>no mic or camera — now what?</summary>
-        <p>no mic support falls back to a random dare automatically. no camera just means you can't submit proof on that device — everything else still works.</p>
-      </details>
-      <details>
-        <summary>is my data private?</summary>
-        <p>everything lives in your browser's local storage, nothing is sent anywhere unless you paste an api key in settings for nicer voice or AI-generated dares — those go straight from your browser to that provider, never through us.</p>
-      </details>
-    </div>
+<div id="settings-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settings-heading">
+  <div class="modal-inner settings-inner">
+    <h2 id="settings-heading">settings</h2>
+    <label class="field-label" for="hf-token">hugging face token (optional)</label>
+    <input id="hf-token" class="field" type="password" autocomplete="off" placeholder="paste token to enable smart dare generation" />
+    <p class="field-hint">without a token, dares come from a curated offline list instead of the live model. nothing you type here leaves your browser.</p>
+    <label class="field-label" for="elevenlabs-key">elevenlabs api key (optional)</label>
+    <input id="elevenlabs-key" class="field" type="password" autocomplete="off" placeholder="paste key for nicer voice" />
+    <p class="field-hint">without a key, voice falls back to your browser's built-in speech engine.</p>
+    <button id="settings-save" class="btn btn-primary">save</button>
   </div>
 </div>
 
-<script type="module" src="app.js?v=11"></script>
+<script type="module" src="app.js?v=10"></script>
 </body>
 </html>
