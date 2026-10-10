@@ -1,40 +1,103 @@
-# touch grass
+![Touch Grass](docs/banner.jpg)
 
-voice dares that get you outside. say how much time and energy you have,
-it gives you a short outdoor dare, you snap a photo as proof when you're done.
+# Touch Grass
 
-built for the hacktoberfest open-source ai challenge, week 1: "touch grass."
+**Voice dares that get you off the screen and outside.** Say how much time and
+energy you've got, and it hands you one short, concrete dare to go do outside —
+then you snap a photo as proof and build a daily streak. One dare, go outside,
+come back later. No feed, no infinite scroll.
 
-## why open
+Built for the [Hacktoberfest Open-Source AI Challenge, Week 1: "Touch Grass"](https://dev.to/challenges/hacktoberfest-week1-2026-10-05).
 
-- dare generation runs on-device with [gemma 3 270m](https://huggingface.co/onnx-community/gemma-3-270m-it-ONNX) via transformers.js, not a hosted api
-- works after the first load even with no signal — service worker caches the page and the model
-- nothing you say or type leaves your browser; your hugging face token and elevenlabs key (both optional) are stored locally and used directly from your device
-- swap the model, edit `dares.json`, or rip out the generation step entirely — it's all plain js
+🔗 **Live:** https://touch-grass-bkii.onrender.com
 
-## running it
+---
 
-just a static site, no build step.
+## What it looks like
+
+The whole app is a little outdoor world you stand in. The painted pixel-art
+scene fills the screen, your character stands in the grass, and the controls
+pin to the edges like a game HUD — nothing floats in a box over the middle.
+
+![Night scene](docs/screenshot-night.jpg)
+
+Flip the theme and the same world re-lights from a cozy night to a warm
+daytime — the backdrop crossfades, the moon slides out and the sun comes up.
+
+![Day scene](docs/screenshot-day.jpg)
+
+Tap the mic, say your time and energy, and a dare slides up from the bottom in
+a dialogue ribbon — tagged with roughly how long it takes and how much energy
+it'll cost — with a "prove it outside" button that opens the camera.
+
+![A generated dare in the quest ribbon](docs/screenshot-dare.jpg)
+
+---
+
+## How it works
+
+- **Default mode needs zero setup.** Say your time/energy/place, it matches you
+  against a small curated dare bank (`dares.json`) and speaks the result with
+  the browser's own `speechSynthesis`. Always works, offline, nothing to configure.
+- **Optional smart layer:** paste a Hugging Face token in settings and dare
+  generation switches to [Gemma 3 270M](https://huggingface.co/onnx-community/gemma-3-270m-it-ONNX)
+  via [transformers.js](https://huggingface.co/docs/transformers.js), running
+  entirely in your browser via WASM — not a hosted API call.
+- **Optional nicer voice:** add an ElevenLabs key, same pattern — your key, used
+  directly from your browser, swappable back to the built-in voice anytime.
+- **Proof + streak:** "prove it outside" opens the camera; a photo counts the
+  dare toward your dares, minutes outside, and a daily streak.
+
+## Why open
+
+- Dare generation runs **on-device** with Gemma 3 270M, not a hosted API — so
+  there's no backend, no API key of mine in the loop, and no bill that scales
+  with usage.
+- **Works offline after the first load** — a service worker caches the app shell
+  and the model, which is the whole point of the "touch grass" theme: it should
+  survive exactly the no-signal situation where it's most useful.
+- **Nothing leaves your browser.** Your Hugging Face token and ElevenLabs key
+  (both optional) are stored locally and used directly from your device.
+- **Fully swappable** — change the model, edit `dares.json`, or rip out the
+  generation step entirely. It's all plain JS.
+
+## Running it
+
+Just a static site, no build step:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-open `localhost:8000`. voice input needs chrome or edge (web speech api support
-is patchy elsewhere). camera proof needs https or localhost.
+Open `localhost:8000`. Voice input needs Chrome or Edge (Web Speech API support
+is patchy elsewhere). Camera proof needs HTTPS or localhost.
 
-## settings
+## Settings
 
-open the gear icon to optionally add:
-- a hugging face token, to enable live dare generation with gemma 3 270m
-- an elevenlabs api key, for nicer voice output
+Open the gear icon (top-right) to optionally add:
 
-without either, it falls back to a curated dare list and your browser's
-built-in voice — still fully usable, just less smart.
+- a **Hugging Face token** — enables live dare generation with Gemma 3 270M
+- an **ElevenLabs API key** — nicer voice output for the spoken dare
 
-## icon
+Without either, it falls back to a curated dare list and your browser's built-in
+voice — still fully usable, just less smart.
 
-`icon.svg` is the favicon and manifest icon — all modern browsers and
-Android accept SVG there directly. `icon-180.png` is a rasterized copy for
-iOS Safari's "Add to Home Screen", which ignores SVG. If the icon design
-changes, re-export `icon-180.png` from `icon.svg` at 180x180.
+## Tech
+
+Plain HTML / CSS / JS. No framework, no build step, no backend.
+
+| | |
+|---|---|
+| **Model** | Gemma 3 270M (ONNX) via transformers.js, client-side WASM |
+| **Voice in** | Web Speech API (`SpeechRecognition`) |
+| **Voice out** | `speechSynthesis`, or ElevenLabs if a key is set |
+| **Proof** | `getUserMedia` + canvas |
+| **Offline** | service worker precache (app shell + model) |
+| **Hosting** | [Render](https://render.com) static site, COOP/COEP headers for the WASM runtime |
+
+## Icons
+
+`icon.svg` is the favicon and manifest icon — modern browsers and Android accept
+SVG there directly. `icon-180.png` is a rasterized copy for iOS Safari's "Add to
+Home Screen", which ignores SVG. If the icon design changes, re-export
+`icon-180.png` from `icon.svg` at 180×180.
