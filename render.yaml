@@ -3,7 +3,7 @@ services:
     runtime: static
     name: touch-grass
     repo: https://github.com/ibrahim-iqbal/touch-grass
-    branch: react-rewrite
+    branch: main
     buildCommand: npm install && npm run build
     staticPublishPath: dist
     envVars:
