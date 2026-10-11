@@ -89,8 +89,8 @@ body {
   transition: opacity 0.6s ease;
 }
 
-.backdrop-day { background-image: url(assets/backdrop-day.jpg); opacity: 1; }
-.backdrop-night { background-image: url(assets/backdrop-night.jpg); opacity: 0; }
+.backdrop-day { background-image: url(/assets/backdrop-day.jpg); opacity: 1; }
+.backdrop-night { background-image: url(/assets/backdrop-night.jpg); opacity: 0; }
 
 :root[data-theme="dark"] .backdrop-day { opacity: 0; }
 :root[data-theme="dark"] .backdrop-night { opacity: 1; }
