@@ -52,6 +52,9 @@ export class PixiWorld {
     this.night = null;
     this.fireflyLayer = null;
     this.cloudLayer = null;
+    this.floraLayer = null;
+    this.flora = [];
+    this.butterflies = [];
     this.sunMoon = null;
     this._nightAlpha = 0;
     this._nightTarget = 0;
@@ -95,6 +98,11 @@ export class PixiWorld {
     // --- sun/moon orb
     this.sunMoon = new Graphics();
     app.stage.addChild(this.sunMoon);
+
+    // --- flora layer (grows with tier, behind characters)
+    this.floraLayer = new Container();
+    app.stage.addChild(this.floraLayer);
+    this._spawnFlora();
 
     // --- all 3 characters
     const charContainer = new Container();
@@ -152,7 +160,7 @@ export class PixiWorld {
       }
     });
 
-    this._onResize = () => this.layout();
+    this._onResize = () => { this.layout(); this._spawnFlora(); };
     window.addEventListener("resize", this._onResize);
     app.ticker.add((ticker) => this.tick(ticker.deltaMS / 1000));
   }
@@ -181,6 +189,85 @@ export class PixiWorld {
     }
     this.target = null;
     this.layout();
+  }
+
+  _spawnFlora() {
+    if (!this.floraLayer || !this.app) return;
+    this.floraLayer.removeChildren();
+    this.flora = [];
+    const vw = this.app.screen.width;
+    const vh = this.app.screen.height;
+    const groundY = vh * GROUND_FRAC;
+    const t = this.tier;
+
+    const rand = (a, b) => a + Math.random() * (b - a);
+    const spots = (n) => Array.from({ length: n }, () => ({
+      x: rand(vw * 0.03, vw * 0.97),
+      y: groundY + rand(2, vh * 0.12),
+    }));
+
+    // grass tufts: always, more per tier
+    for (const { x, y } of spots(6 + t * 5)) {
+      const g = new Graphics();
+      const c = 0x3f8f4f;
+      g.rect(-1, -7, 2, 7).fill({ color: c, alpha: 0.9 });
+      g.rect(-4, -5, 2, 5).fill({ color: c, alpha: 0.8 });
+      g.rect(2, -5, 2, 5).fill({ color: c, alpha: 0.8 });
+      g.x = x; g.y = y;
+      this.floraLayer.addChild(g);
+      this.flora.push({ g, phase: Math.random() * Math.PI * 2, sway: 0.06 });
+    }
+
+    // flowers: tier 1+
+    if (t >= 1) {
+      const petalColors = [0xffd34d, 0xff7d9c, 0xb48bff, 0xff9d5c];
+      for (const { x, y } of spots(3 + t * 4)) {
+        const g = new Graphics();
+        g.rect(-1, -10, 2, 10).fill(0x3f8f4f); // stem
+        const pc = petalColors[Math.floor(Math.random() * petalColors.length)];
+        g.rect(-4, -14, 3, 3).fill(pc);
+        g.rect(1, -14, 3, 3).fill(pc);
+        g.rect(-4, -10, 3, 3).fill(pc);
+        g.rect(1, -10, 3, 3).fill(pc);
+        g.rect(-1.5, -12.5, 3, 3).fill(0xfff3c4); // center
+        g.x = x; g.y = y;
+        this.floraLayer.addChild(g);
+        this.flora.push({ g, phase: Math.random() * Math.PI * 2, sway: 0.05 });
+      }
+    }
+
+    // mushrooms: tier 2+
+    if (t >= 2) {
+      for (const { x, y } of spots(2 + (t - 1) * 2)) {
+        const g = new Graphics();
+        g.rect(-2, -5, 4, 5).fill(0xf0e6d8);           // stalk
+        g.rect(-5, -9, 10, 4).fill(0xd4544f);          // cap
+        g.rect(-3, -11, 6, 2).fill(0xd4544f);          // cap top
+        g.rect(-3, -8, 2, 2).fill(0xffffff);           // dots
+        g.rect(1, -8, 2, 2).fill(0xffffff);
+        g.x = x; g.y = y;
+        this.floraLayer.addChild(g);
+        this.flora.push({ g, phase: 0, sway: 0 });
+      }
+    }
+
+    // butterflies: tier 3
+    if (t >= 3) {
+      this.butterflies = [];
+      for (let i = 0; i < 4; i++) {
+        const g = new Graphics();
+        const bc = [0xffd34d, 0xff7d9c, 0x7dd3ff][i % 3];
+        g.rect(-4, -2, 3, 4).fill(bc);
+        g.rect(1, -2, 3, 4).fill(bc);
+        g.rect(-1, -2, 2, 5).fill(0x333333);
+        g.x = rand(vw * 0.1, vw * 0.9);
+        g.y = rand(vh * 0.45, groundY);
+        this.floraLayer.addChild(g);
+        this.butterflies.push({ g, phase: rand(0, Math.PI * 2), baseY: g.y, vx: rand(10, 24) * (Math.random() < 0.5 ? -1 : 1) });
+      }
+    } else {
+      this.butterflies = [];
+    }
   }
 
   _spawnClouds() {
@@ -362,6 +449,7 @@ export class PixiWorld {
     if (tier === this.tier) return;
     this.tier = tier;
     this.spawnFireflies();
+    this._spawnFlora();
   }
 
   walkOff() {
@@ -446,6 +534,25 @@ export class PixiWorld {
         const sprite = this.chars[key].sprite;
         // gentle bob
         sprite.y = this.groundY + Math.sin(this.time * 1.5 + CHAR_KEYS.indexOf(key)) * 2;
+      }
+    }
+
+    // --- flora sway + butterflies ---
+    if (this.flora) {
+      for (const p of this.flora) {
+        if (!p.sway) continue;
+        p.phase += dt * 1.2;
+        p.g.rotation = Math.sin(p.phase) * p.sway;
+      }
+    }
+    if (this.butterflies) {
+      for (const b of this.butterflies) {
+        b.phase += dt * 3;
+        b.g.x += b.vx * dt;
+        b.g.y = b.baseY + Math.sin(b.phase) * 10;
+        b.g.scale.y = 0.7 + 0.3 * Math.abs(Math.sin(b.phase * 2.5)); // wing flap
+        if (b.g.x < -10) { b.g.x = vw + 10; }
+        if (b.g.x > vw + 10) { b.g.x = -10; }
       }
     }
 
