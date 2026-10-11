@@ -17,7 +17,9 @@ function SettingsIcon() {
   );
 }
 
-export default function Hud({ state, theme, onHelp, onTheme, onSettings, justUnlocked }) {
+const CHAR_LABELS = { "mask-dude": "Mask Dude", "ninja-frog": "Ninja Frog", "pink-man": "Pink Man" };
+
+export default function Hud({ state, theme, character, onHelp, onTheme, onCharacter, onSettings, justUnlocked }) {
   const { level, xpInLevel, xpToNext, title } = computeLevel(state.daresDone);
   const xpPct = Math.round((xpInLevel / xpToNext) * 100);
   const lit = Math.min(state.streak, MAX_PIPS);
@@ -27,18 +29,28 @@ export default function Hud({ state, theme, onHelp, onTheme, onSettings, justUnl
 
   return (
     <>
-      <header className="hud hud-top-left">
-        <div className="level-badge"><span className="level-num">{level}</span></div>
-        <div className="level-info">
-          <p className="rank-title">{title}</p>
-          <div className="xp-bar" role="progressbar" aria-label="experience to next level" aria-valuemin={0} aria-valuemax={100} aria-valuenow={xpPct}>
-            <div className="xp-fill" style={{ width: `${xpPct}%` }} />
+      <header className="hud hud-panel hud-top-left">
+        <div className="hud-top-left-row">
+          <div className="level-badge"><span className="level-num">{level}</span></div>
+          <div className="level-info">
+            <p className="rank-title">{title}</p>
+            <div className="xp-bar" role="progressbar" aria-label="experience to next level" aria-valuemin={0} aria-valuemax={100} aria-valuenow={xpPct}>
+              <div className="xp-fill" style={{ width: `${xpPct}%` }} />
+            </div>
           </div>
+        </div>
+        <div className="hud-inline-stats">
+          <div className="stat-mini"><span className="stat-mini-num">{state.daresDone}</span><span className="stat-mini-label">dares</span></div>
+          <div className="stat-mini"><span className="stat-mini-num">{state.outsideMinutes}m</span><span className="stat-mini-label">outside</span></div>
+          <div className="stat-mini"><span className="stat-mini-num">{state.bestStreak}</span><span className="stat-mini-label">best</span></div>
         </div>
       </header>
 
       <div className="hud hud-top-right">
         <div className="top-bar-actions">
+          <button className="icon-btn char-btn" aria-label={`character: ${CHAR_LABELS[character] || character}`} title={`character: ${CHAR_LABELS[character] || character} (tap to switch)`} onClick={onCharacter}>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+          </button>
           <button className="icon-btn" aria-label="help and faq" title="help / how this works" onClick={onHelp}><HelpIcon /></button>
           <button className="icon-btn" aria-label="toggle light and dark mode" title="toggle light / dark" onClick={onTheme}>
             {dark ? (
@@ -63,7 +75,7 @@ export default function Hud({ state, theme, onHelp, onTheme, onSettings, justUnl
       </div>
 
       {showProgress && (
-        <div className="hud hud-badges badges">
+        <div className="hud hud-panel hud-badges badges">
           {BADGES.map((b) => {
             const unlocked = b.test(state);
             const isNew = justUnlocked?.includes(b.id);
@@ -79,12 +91,6 @@ export default function Hud({ state, theme, onHelp, onTheme, onSettings, justUnl
           })}
         </div>
       )}
-
-      <section className="hud hud-stats">
-        <div className="stat"><p className="stat-num">{state.daresDone}</p><p className="stat-label">dares</p></div>
-        <div className="stat"><p className="stat-num">{state.outsideMinutes}m</p><p className="stat-label">outside</p></div>
-        <div className="stat"><p className="stat-num">{state.bestStreak}</p><p className="stat-label">best</p></div>
-      </section>
     </>
   );
 }

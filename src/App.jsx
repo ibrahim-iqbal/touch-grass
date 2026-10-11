@@ -15,6 +15,21 @@ export default function App() {
   const { state, recordProof } = useGameState();
   const { theme, toggle } = useTheme();
 
+  const [character, setCharacter] = useState(() => {
+    try { return localStorage.getItem("tg-character") || "mask-dude"; } catch { return "mask-dude"; }
+  });
+
+  // button toggles show-all mode; tapping a char in the scene picks it
+  const toggleShowAll = useCallback(() => {
+    worldRef.current?.showAllCharacters?.();
+  }, []);
+
+  // called from Pixi when a character sprite is tapped
+  const onCharacterPick = useCallback((key) => {
+    setCharacter(key);
+    try { localStorage.setItem("tg-character", key); } catch {}
+  }, []);
+
   const [dare, setDare] = useState(null);
   const dareRef = useRef(null);
   const worldRef = useRef(null);
@@ -26,7 +41,6 @@ export default function App() {
   const onDare = useCallback((d) => {
     dareRef.current = d;
     setDare(d);
-    // the character heads off into the world to go do the dare
     worldRef.current?.walkOff?.();
   }, []);
   const getCurrentDare = useCallback(() => dareRef.current, []);
@@ -46,25 +60,24 @@ export default function App() {
         setJustUnlocked(res.justUnlocked);
         setTimeout(() => setJustUnlocked([]), 600);
       }
-      // ponytail: the player cheer + sparkle burst lived on the DOM sprite;
-      // that moves to the Pixi scene (phase 2), where celebrate() will fire.
     },
     [recordProof, setMicHint]
   );
 
   const camera = useCamera({ onHint: setMicHint, onProof });
-
   const showPitch = !dare && state.daresDone === 0;
 
   return (
     <div className="page">
-      <Scene theme={theme} tier={worldTier(state.daresDone)} worldRef={worldRef} />
+      <Scene theme={theme} tier={worldTier(state.daresDone)} character={character} onCharacterPick={onCharacterPick} worldRef={worldRef} />
 
       <Hud
         state={state}
         theme={theme}
+        character={character}
         onHelp={() => setHelpOpen(true)}
         onTheme={toggle}
+        onCharacter={toggleShowAll}
         onSettings={() => setSettingsOpen(true)}
         justUnlocked={justUnlocked}
       />
