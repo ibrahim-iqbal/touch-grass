@@ -1,20 +1,15 @@
-import { forwardRef } from "react";
+import PixiWorld from "./PixiWorld.jsx";
 
-// The scene backdrop. The painted day/night art, sky, stars and sliding
-// sun/moon stay as cheap CSS ambiance (they key off <html data-theme>). The
-// living, interactive layer (character, parallax, fog, fireflies, particles)
-// mounts into `.pixi-layer` in phase 2. `tier` still drives any CSS growth.
-const Scene = forwardRef(function Scene({ tier }, pixiMountRef) {
+// The scene stage. The Pixi world (painted backdrop + walking character +
+// fireflies + camera) is the real, interactive layer. The CSS sky/backdrop
+// underneath stays as a graceful fallback if Pixi fails to init.
+export default function Scene({ theme, tier, worldRef }) {
   return (
     <div className="scene" data-tier={tier} aria-hidden="true">
       <div className="sky" />
       <div className="backdrop-img backdrop-day" />
       <div className="backdrop-img backdrop-night" />
-      <div className="stars" />
-      <div className="sun-moon" />
-      <div className="pixi-layer" ref={pixiMountRef} />
+      <PixiWorld theme={theme} tier={tier} worldRef={worldRef} />
     </div>
   );
-});
-
-export default Scene;
+}

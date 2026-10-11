@@ -92,6 +92,10 @@ body {
 .backdrop-day { background-image: url(/assets/backdrop-day.jpg); opacity: 1; }
 .backdrop-night { background-image: url(/assets/backdrop-night.jpg); opacity: 0; }
 
+/* the interactive Pixi world sits on top of the CSS backdrop fallback */
+.pixi-layer { position: absolute; inset: 0; }
+.pixi-layer canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+
 :root[data-theme="dark"] .backdrop-day { opacity: 0; }
 :root[data-theme="dark"] .backdrop-night { opacity: 1; }
 @media (prefers-color-scheme: dark) {

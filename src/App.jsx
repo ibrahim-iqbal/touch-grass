@@ -17,6 +17,7 @@ export default function App() {
 
   const [dare, setDare] = useState(null);
   const dareRef = useRef(null);
+  const worldRef = useRef(null);
   const [proofThumb, setProofThumb] = useState(null);
   const [justUnlocked, setJustUnlocked] = useState([]);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -25,6 +26,8 @@ export default function App() {
   const onDare = useCallback((d) => {
     dareRef.current = d;
     setDare(d);
+    // the character heads off into the world to go do the dare
+    worldRef.current?.walkOff?.();
   }, []);
   const getCurrentDare = useCallback(() => dareRef.current, []);
 
@@ -55,7 +58,7 @@ export default function App() {
 
   return (
     <div className="page">
-      <Scene tier={worldTier(state.daresDone)} />
+      <Scene theme={theme} tier={worldTier(state.daresDone)} worldRef={worldRef} />
 
       <Hud
         state={state}
